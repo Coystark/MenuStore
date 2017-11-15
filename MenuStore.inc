@@ -1,5 +1,5 @@
 /*
-	MenuStore - Version 1.0
+	MenuStore - Version 1.1
 	Created by CaioTJF
 */
 
@@ -20,19 +20,39 @@
 #define MS_DEFAULT_MONEY_SIGN "$"
 #define MS_DEFAULT_CONFIRM "Buy"
 
-#define MS_COLOR_SELECT_TD	0xffffffFF
+#define MS_COLOR_SELECT_TD 0xffffffFF
 #define MS_COLOR_BACKGROUND_1 0x04586bFF
 #define MS_COLOR_BACKGROUND_2 0x0486a4FF
+#define	MS_COLOR_BACKGROUND_ITEM MS_COLOR_BACKGROUND_1
 #define MS_COLOR_BACKGROUND_ITEMSELECTED 0xffffff50
 #define MS_COLOR_TEXT_MAIN 0xffffffFF
-#define MS_COLOR_REMOVEITEMFROMCART	0xc64e52FF
 #define MS_COLOR_BACKGROUND_CONFIRM 0x5eaf3aFF
+
+#define MS_COLOR_CART_REMOVEITEM 0xc64e52FF
+#define MS_COLOR_CART_BACKGROUNDITEM MS_COLOR_BACKGROUND_ITEM
 
 #define MS_COLOR_DESCRIPTION_NAMEITEM MS_COLOR_TEXT_MAIN
 #define MS_COLOR_DESCRIPTION_TEXT 0xffffffAA
 #define MS_COLOR_DESCRIPTION_BACKGROUND_1 MS_COLOR_BACKGROUND_1
 #define MS_COLOR_DESCRIPTION_BACKGROUND_2 MS_COLOR_BACKGROUND_2
-#define MS_COLOR_DESCRIPTION_BGMODEL 0xffffff50
+#define MS_COLOR_DESCRIPTION_BGMODEL 0xffffff50	
+
+/*#define MS_COLOR_SELECT_TD 0xffffffFF
+#define MS_COLOR_BACKGROUND_1 0x00000070
+#define MS_COLOR_BACKGROUND_2 0x2c2c2cAA
+#define	MS_COLOR_BACKGROUND_ITEM 0x3e3e3eFF
+#define MS_COLOR_BACKGROUND_ITEMSELECTED 0xffffff50
+#define MS_COLOR_TEXT_MAIN 0xffffffFF
+#define MS_COLOR_BACKGROUND_CONFIRM 0x5eaf3aFF
+
+#define MS_COLOR_CART_REMOVEITEM 0xcc30a0aAA
+#define MS_COLOR_CART_BACKGROUNDITEM MS_COLOR_BACKGROUND_ITEM
+
+#define MS_COLOR_DESCRIPTION_NAMEITEM MS_COLOR_TEXT_MAIN
+#define MS_COLOR_DESCRIPTION_TEXT 0xffffffAA
+#define MS_COLOR_DESCRIPTION_BACKGROUND_1 MS_COLOR_BACKGROUND_1
+#define MS_COLOR_DESCRIPTION_BACKGROUND_2 MS_COLOR_BACKGROUND_2
+#define MS_COLOR_DESCRIPTION_BGMODEL 0xffffff50*/
 
 #define MS_COLOR_TITLE_DIALOG "{0486a4}"
 #define MS_COLOR_TEXT_DIALOG "{ffffff}"
@@ -262,7 +282,7 @@ public OnPlayerClickTextDraw(playerid, Text:clickedid)
 	{
 		new storeid[32] = "store_";
 		strcat(storeid, ms_Info[playerid][ms_StoreID]);
-		CallLocalFunction(storeid, "iiiiiis", playerid, false, MSTORE_INVALID_ITEM_ID, 0, 0, 0, EOS);
+		CallLocalFunction(storeid, "iiiiiis", playerid, false, MSTORE_INVALID_ITEM_ID, 0, 0, 0, "N/A");
 		MenuStore_Close(playerid);
 		return true;
 	}
@@ -431,7 +451,7 @@ stock MenuStore_SetPage(playerid, pageid)
 											1,
 											-1,
 											1,
-											MS_COLOR_BACKGROUND_1,
+											MS_COLOR_BACKGROUND_ITEM,
 											0,
 											0,
 											255,
@@ -645,7 +665,7 @@ stock MenuStore_CreateCartRow(playerid, row)
 												1,
 												-1,
 												1,
-												MS_COLOR_BACKGROUND_1,
+												MS_COLOR_CART_BACKGROUNDITEM,
 												0,
 												0,
 												255,
@@ -673,7 +693,7 @@ stock MenuStore_CreateCartRow(playerid, row)
 										0.387349, 1.546665,
 										0.0, 0.0,
 										3,
-										MS_COLOR_REMOVEITEMFROMCART,
+										MS_COLOR_CART_REMOVEITEM,
 										0,
 										0,
 										0,
@@ -984,7 +1004,7 @@ stock MenuStore_UnselectRow(playerid)
 	if(ms_Info[playerid][ms_Selected] != -1)
 	{
 		new row = ms_Info[playerid][ms_Selected];
-		PlayerTextDrawBoxColor(playerid, ms_TD_ItemBackground[playerid][row], MS_COLOR_BACKGROUND_1);
+		PlayerTextDrawBoxColor(playerid, ms_TD_ItemBackground[playerid][row], MS_COLOR_BACKGROUND_ITEM);
 		PlayerTextDrawHide(playerid, ms_TD_ItemBackground[playerid][row]);
 		PlayerTextDrawShow(playerid, ms_TD_ItemBackground[playerid][row]);
 	}
