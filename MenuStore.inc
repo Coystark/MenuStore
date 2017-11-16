@@ -701,7 +701,7 @@ stock MenuStore_RemoveCartRows(playerid)
 
 stock MenuStore_UpdateCartTotalValue(playerid)
 {
-	format(ms_String, sizeof(ms_String), ""#MS_WORD_TOTAL":_%s%d", ms_Info[playerid][ms_MoneySign], MenuStore_GetCartTotalValue(playerid));
+	format(ms_String, sizeof(ms_String), ""#MS_WORD_TOTAL": %s%d", ms_Info[playerid][ms_MoneySign], MenuStore_GetCartTotalValue(playerid));
 	PlayerTextDrawSetString(playerid, ms_TD_Cart_Total[playerid], ms_String);
 }
 
