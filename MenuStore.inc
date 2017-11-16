@@ -799,7 +799,6 @@ stock MenuStore_Open(playerid, menuid[], store_name[], money_sign[] = MS_DEFAULT
 
 	if(ms_Info[playerid][ms_TotalItems] > MS_MAX_ITEMS_PER_PAGE)
 	{
-		// 245
 		ms_TD_Next[playerid] = CreatePlayerTextDrawEx(playerid, 251.485229, 390.033355, "ld_beat:right",
 									0.000000, 0.000000,
 									11.000000, 13.000000,
@@ -816,7 +815,6 @@ stock MenuStore_Open(playerid, menuid[], store_name[], money_sign[] = MS_DEFAULT
 									0.0, 0.0, 0.0, 0.0,
 									1);
 
-		// 195
 		ms_TD_Previous[playerid] = CreatePlayerTextDrawEx(playerid, 201.945220, 390.033355, "ld_beat:left",
 									0.000000, 0.000000,
 									11.000000, 13.000000,
@@ -1077,7 +1075,7 @@ stock MenuStore_OpenDescription(playerid, index)
 												5,
 												0,
 												ms_Items[playerid][index][ms_ItemModel],
-												0.0, 0.0, 0.0, 1.0);
+												ms_Items[playerid][index][ms_ItemItemPreviewRot][0], ms_Items[playerid][index][ms_ItemItemPreviewRot][1], ms_Items[playerid][index][ms_ItemItemPreviewRot][2], ms_Items[playerid][index][ms_ItemItemPreviewRot][3]);
 	}
 	else
 	{
@@ -1086,6 +1084,8 @@ stock MenuStore_OpenDescription(playerid, index)
 		PlayerTextDrawHide(playerid, ms_TD_DescriptionItemModel[playerid]);
 
 		PlayerTextDrawSetPreviewModel(playerid, ms_TD_DescriptionItemModel[playerid], ms_Items[playerid][index][ms_ItemModel]);
+		PlayerTextDrawSetPreviewRot(playerid, ms_TD_DescriptionItemModel[playerid], ms_Items[playerid][index][ms_ItemItemPreviewRot][0], ms_Items[playerid][index][ms_ItemItemPreviewRot][1], ms_Items[playerid][index][ms_ItemItemPreviewRot][2], ms_Items[playerid][index][ms_ItemItemPreviewRot][3]);
+
 		PlayerTextDrawSetString(playerid, ms_TD_DescriptionItemName[playerid], ms_Items[playerid][index][ms_ItemName][0]);
 		PlayerTextDrawSetString(playerid, ms_TD_DescriptionItemText[playerid], ms_Items[playerid][index][ms_ItemDescription][0]);
 	}
