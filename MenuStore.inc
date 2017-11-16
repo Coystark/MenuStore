@@ -1,5 +1,5 @@
 /*
-	MenuStore - Version 1.1
+	MenuStore - Version 2.0
 	Created by CaioTJF
 */
 
@@ -21,44 +21,29 @@
 #define MS_DEFAULT_CONFIRM "Buy"
 
 #define MS_COLOR_SELECT_TD 0xffffffFF
-#define MS_COLOR_BACKGROUND_1 0x04586bFF
-#define MS_COLOR_BACKGROUND_2 0x0486a4FF
-#define	MS_COLOR_BACKGROUND_ITEM MS_COLOR_BACKGROUND_1
-#define MS_COLOR_BACKGROUND_ITEMSELECTED 0xffffff50
 #define MS_COLOR_TEXT_MAIN 0xffffffFF
-#define MS_COLOR_BACKGROUND_CONFIRM 0x5eaf3aFF
 
-#define MS_COLOR_CART_REMOVEITEM 0xc64e52FF
-#define MS_COLOR_CART_BACKGROUNDITEM MS_COLOR_BACKGROUND_ITEM
-
-#define MS_COLOR_DESCRIPTION_NAMEITEM MS_COLOR_TEXT_MAIN
-#define MS_COLOR_DESCRIPTION_TEXT 0xffffffAA
-#define MS_COLOR_DESCRIPTION_BACKGROUND_1 MS_COLOR_BACKGROUND_1
-#define MS_COLOR_DESCRIPTION_BACKGROUND_2 MS_COLOR_BACKGROUND_2
-#define MS_COLOR_DESCRIPTION_BGMODEL 0xffffff50	
-
-/*#define MS_COLOR_SELECT_TD 0xffffffFF
-#define MS_COLOR_BACKGROUND_1 0x00000070
+#define MS_COLOR_BACKGROUND_1 0x00000080
 #define MS_COLOR_BACKGROUND_2 0x2c2c2cAA
 #define	MS_COLOR_BACKGROUND_ITEM 0x3e3e3eFF
 #define MS_COLOR_BACKGROUND_ITEMSELECTED 0xffffff50
-#define MS_COLOR_TEXT_MAIN 0xffffffFF
 #define MS_COLOR_BACKGROUND_CONFIRM 0x5eaf3aFF
+#define MS_COLOR_BACKGROUND_MODEL 0xffffff50
 
-#define MS_COLOR_CART_REMOVEITEM 0xcc30a0aAA
-#define MS_COLOR_CART_BACKGROUNDITEM MS_COLOR_BACKGROUND_ITEM
+#define MS_COLOR_CART_REMOVEITEM 0xcc30a0aFF
+#define MS_COLOR_CART_BACKGROUND_ITEM MS_COLOR_BACKGROUND_ITEM
 
 #define MS_COLOR_DESCRIPTION_NAMEITEM MS_COLOR_TEXT_MAIN
 #define MS_COLOR_DESCRIPTION_TEXT 0xffffffAA
 #define MS_COLOR_DESCRIPTION_BACKGROUND_1 MS_COLOR_BACKGROUND_1
 #define MS_COLOR_DESCRIPTION_BACKGROUND_2 MS_COLOR_BACKGROUND_2
-#define MS_COLOR_DESCRIPTION_BGMODEL 0xffffff50*/
+#define MS_COLOR_DESCRIPTION_BACKGROUND_MODEL 0xffffff50
 
-#define MS_COLOR_TITLE_DIALOG "{0486a4}"
+#define MS_COLOR_TITLE_DIALOG "{ffffff}"
 #define MS_COLOR_TEXT_DIALOG "{ffffff}"
 
 #define MS_MSG_TITLE_DIALOG "Choose quantity"
-#define MS_MSG_DIALOG "Enter the quantity you wish to purchase"
+#define MS_MSG_DIALOG "Enter the quantity you want to buy"
 
 #define MS_WORD_LIMIT "Limit"
 #define MS_WORD_CLOSE "Close"
@@ -66,9 +51,6 @@
 #define MS_WORD_GO "Go"
 #define MS_WORD_CANCEL "Cancel"
 #define MS_WORD_CART "Cart"
-
-#define MS_TEXT_NEXT ">>"
-#define MS_TEXT_PREVIOUS "<<"
 
 #define MS_INTERVAL_DOUBLECLICK 300
 #define DIALOG_MSTORE 23132
@@ -83,7 +65,6 @@
 
 #define MenuStore_Show(%0,%1, \
 	MenuStore_Open(%0, #%1,
-
 
 enum enum_ms_Items
 {
@@ -151,8 +132,6 @@ static PlayerText:ms_TD_Cart_Total[MAX_PLAYERS] = {PlayerText:INVALID_TEXT_DRAW,
 forward PlayerText:CreatePlayerTextDrawEx(playerid, Float:x, Float:y, text[], Float:size_x, Float:size_y, Float:textsize_x, Float:textsize_y, align, color, usebox,	boxcolor, shadow, outline, bg_color, font, proportional, model = 0,	Float:preview_x= 0.0, Float:preview_y = 0.0, Float:preview_z = 0.0, Float:preview_zoom = 1.0, selectable = 0);
 
 //-------------------------------------------
-
-
 
 public OnPlayerClickPlayerTextDraw(playerid, PlayerText:playertextid)
 {
@@ -463,11 +442,11 @@ stock MenuStore_SetPage(playerid, pageid)
 
 		ms_TD_ItemName[playerid][current_row] = CreatePlayerTextDrawEx(playerid, ms_Item_Name_Base_X, ms_Item_Name_Base_Y, ms_Items[playerid][i][ms_ItemName][0],
 										0.231024, 1.198331,
-										0.0, 0.0,
+										310.000000, 0.0,
 										1,
 										MS_COLOR_TEXT_MAIN,
-										0,
-										0,
+										1,
+										0xffffff00,
 										0,
 										0,
 										255,
@@ -497,7 +476,7 @@ stock MenuStore_SetPage(playerid, pageid)
 										0,
 										0,
 										0,
-										0xffffff50,
+										MS_COLOR_BACKGROUND_MODEL,
 										5,
 										0,
 										ms_Items[playerid][i][ms_ItemModel],
@@ -511,21 +490,24 @@ stock MenuStore_SetPage(playerid, pageid)
 		PlayerTextDrawShow(playerid, ms_TD_ItemModel[playerid][current_row]);
 	}
 
-	format(ms_String, sizeof(ms_String), "%d/%d", pageid, MenuStore_GetNumbersOfPage(playerid));
-	ms_TD_Pagination[playerid] = CreatePlayerTextDrawEx(playerid, 232.840560, 388.317138, ms_String,
-							0.400000, 1.600000,
-							0.0, 0.0,
-							2,
-							MS_COLOR_TEXT_MAIN,
-							0,
-							0,
-							0,
-							0,
-							255,
-							2,
-							1);
+	if(ms_Info[playerid][ms_TotalItems] > MS_MAX_ITEMS_PER_PAGE)
+	{
+		format(ms_String, sizeof(ms_String), "%d/%d", pageid, MenuStore_GetNumbersOfPage(playerid));
+		ms_TD_Pagination[playerid] = CreatePlayerTextDrawEx(playerid, 232.255233, 388.983795, ms_String,
+								0.318008, 1.454166,
+								0.0, 0.0,
+								2,
+								MS_COLOR_TEXT_MAIN,
+								0,
+								0,
+								0,
+								0,
+								255,
+								2,
+								1);
 
-	PlayerTextDrawShow(playerid, ms_TD_Pagination[playerid]);
+		PlayerTextDrawShow(playerid, ms_TD_Pagination[playerid]);
+	}
 }
 
 
@@ -665,7 +647,7 @@ stock MenuStore_CreateCartRow(playerid, row)
 												1,
 												-1,
 												1,
-												MS_COLOR_CART_BACKGROUNDITEM,
+												MS_COLOR_CART_BACKGROUND_ITEM,
 												0,
 												0,
 												255,
@@ -678,11 +660,11 @@ stock MenuStore_CreateCartRow(playerid, row)
 	format(ms_String, sizeof(ms_String), "%dx_%s", ms_Cart[playerid][ms_Cart_ItemAmount][row], MenuStore_GetItemNameByID(playerid, ms_Cart[playerid][ms_Cart_ItemID][row]));
 	ms_TD_Cart_ItemName[playerid][row] = CreatePlayerTextDrawEx(playerid, 345.200073, ms_Cart_Item_ItemName_Base_Y, ms_String,
 										0.210997, 1.169996,
-										0.0, 0.0,
+										506.000000, 0.0,
 										1,
 										MS_COLOR_TEXT_MAIN,
-										0,
-										0,
+										1,
+										0xffffff00,
 										0,
 										0,
 										255,
@@ -775,50 +757,6 @@ stock MenuStore_Open(playerid, menuid[], store_name[], money_sign[] = MS_DEFAULT
 	format(ms_Info[playerid][ms_MoneySign], 32, money_sign);
 	format(ms_Info[playerid][ms_StoreID], 32, menuid);
 
-	ms_TD_StoreName[playerid] = CreatePlayerTextDrawEx(playerid, 150.843780, 129.850082, store_name,
-								0.310358, 1.434999,
-								0.0, 0.0,
-								1,
-								MS_COLOR_TEXT_MAIN,
-								0,
-								0,
-								0,
-								0,
-								255,
-								2,
-								1);
-
-	ms_TD_Next[playerid] = CreatePlayerTextDrawEx(playerid, 256.970825, 388.650360, MS_TEXT_NEXT,
-								0.336749, 1.565000,
-								273.099945, 10.0,
-								1,
-								MS_COLOR_TEXT_MAIN,
-								0,
-								0,
-								0,
-								0,
-								255,
-								2,
-								1,
-								0,
-								0.0, 0.0, 0.0, 0.0,
-								1);
-
-	ms_TD_Previous[playerid] = CreatePlayerTextDrawEx(playerid, 189.966735, 388.650360, MS_TEXT_PREVIOUS,
-								0.336749, 1.565000,
-								209.300018, 10.0,
-								1,
-								MS_COLOR_TEXT_MAIN,
-								0,
-								0,
-								0,
-								0,
-								255,
-								2,
-								1,
-								0,
-								0.0, 0.0, 0.0, 0.0,
-								1);
 
 	ms_TD_Backgrounds[playerid][0]  = CreatePlayerTextDrawEx(playerid, 145.500000, 130.499969, "box",
 										0.000000, 30.198539,
@@ -846,13 +784,62 @@ stock MenuStore_Open(playerid, menuid[], store_name[], money_sign[] = MS_DEFAULT
 										1,
 										1);
 
+	ms_TD_StoreName[playerid] = CreatePlayerTextDrawEx(playerid, 150.843780, 129.850082, store_name,
+								0.310358, 1.434999,
+								315.000000, 0.0,
+								1,
+								MS_COLOR_TEXT_MAIN,
+								1,
+								0,
+								0,
+								0,
+								255,
+								2,
+								1);
+
+	if(ms_Info[playerid][ms_TotalItems] > MS_MAX_ITEMS_PER_PAGE)
+	{
+		// 245
+		ms_TD_Next[playerid] = CreatePlayerTextDrawEx(playerid, 251.485229, 390.033355, "ld_beat:right",
+									0.000000, 0.000000,
+									11.000000, 13.000000,
+									1,
+									MS_COLOR_TEXT_MAIN,
+									0,
+									0,
+									0,
+									0,
+									255,
+									4,
+									1,
+									0,
+									0.0, 0.0, 0.0, 0.0,
+									1);
+
+		// 195
+		ms_TD_Previous[playerid] = CreatePlayerTextDrawEx(playerid, 201.945220, 390.033355, "ld_beat:left",
+									0.000000, 0.000000,
+									11.000000, 13.000000,
+									1,
+									MS_COLOR_TEXT_MAIN,
+									0,
+									0,
+									0,
+									0,
+									255,
+									4,
+									1,
+									0,
+									0.0, 0.0, 0.0, 0.0,
+									1);
+
+		PlayerTextDrawShow(playerid, ms_TD_Previous[playerid]);
+		PlayerTextDrawShow(playerid, ms_TD_Next[playerid]);
+	}
 
 	PlayerTextDrawShow(playerid, ms_TD_StoreName[playerid]);
-	PlayerTextDrawShow(playerid, ms_TD_Previous[playerid]);
-	PlayerTextDrawShow(playerid, ms_TD_Next[playerid]);
 	PlayerTextDrawShow(playerid, ms_TD_Backgrounds[playerid][0]);
 	PlayerTextDrawShow(playerid, ms_TD_Backgrounds[playerid][1]);
-
 
 	// Cart
 
@@ -884,11 +871,11 @@ stock MenuStore_Open(playerid, menuid[], store_name[], money_sign[] = MS_DEFAULT
 
 	ms_TD_Cart_CartName[playerid] = CreatePlayerTextDrawEx(playerid, 339.143798, 270.733520, MS_WORD_CART,
 									0.310357, 1.434998,
-									0.0, 0.0,
+									508.000000, 0.0,
 									1,
 									MS_COLOR_TEXT_MAIN,
-									0,
-									0,
+									1,
+									0xffffff00,
 									0,
 									0,
 									255,
@@ -899,11 +886,11 @@ stock MenuStore_Open(playerid, menuid[], store_name[], money_sign[] = MS_DEFAULT
 	format(ms_String, sizeof(ms_String), ""#MS_WORD_TOTAL": %s0", ms_Info[playerid][ms_MoneySign]);
 	ms_TD_Cart_Total[playerid] = CreatePlayerTextDrawEx(playerid, 339.200012, 386.949951, ms_String,
 							0.219999, 1.331665,
-							0.0, 0.0,
+							437.000000, 0.0,
 							1,
 							MS_COLOR_TEXT_MAIN,
-							0,
-							0,
+							1,
+							0xffffff00,
 							0,
 							0,
 							255,
@@ -928,11 +915,11 @@ stock MenuStore_Open(playerid, menuid[], store_name[], money_sign[] = MS_DEFAULT
 
 	ms_TD_Cart_BuyName[playerid] = CreatePlayerTextDrawEx(playerid, 476.000152, 386.683441, button_confirm,
 							0.282000, 1.442499,
-							0.0, 0.0,
+							0.000000, 61.000000,
 							2,
 							MS_COLOR_TEXT_MAIN,
-							0,
-							0,
+							1,
+							0xffffff00,
 							0,
 							0,
 							255,
@@ -1053,11 +1040,11 @@ stock MenuStore_OpenDescription(playerid, index)
 
 		ms_TD_DescriptionItemName[playerid] = CreatePlayerTextDrawEx(playerid, 392.611175, 134.333419, ms_Items[playerid][index][ms_ItemName][0],
 												0.225572, 1.349166,
-												0.0, 0.0,
+												514.000000, 0.0,
 												1,
 												MS_COLOR_DESCRIPTION_NAMEITEM,
-												0,
-												0,
+												1,
+												0xffffff00,
 												0,
 												0,
 												255,
@@ -1066,11 +1053,11 @@ stock MenuStore_OpenDescription(playerid, index)
 
 		ms_TD_DescriptionItemText[playerid] = CreatePlayerTextDrawEx(playerid, 392.685241, 147.783721, ms_Items[playerid][index][ms_ItemDescription][0],
 												0.199804, 1.098332,
-												0.0, 0.0,
+												513.000000, 0.000000,
 												1,
 												MS_COLOR_DESCRIPTION_TEXT,
-												0,
-												0,
+												1,
+												0xffffff00,
 												0,
 												0,
 												255,
@@ -1086,7 +1073,7 @@ stock MenuStore_OpenDescription(playerid, index)
 												0,
 												0,
 												0,
-												MS_COLOR_DESCRIPTION_BGMODEL,
+												MS_COLOR_DESCRIPTION_BACKGROUND_MODEL,
 												5,
 												0,
 												ms_Items[playerid][index][ms_ItemModel],
@@ -1099,8 +1086,8 @@ stock MenuStore_OpenDescription(playerid, index)
 		PlayerTextDrawHide(playerid, ms_TD_DescriptionItemModel[playerid]);
 
 		PlayerTextDrawSetPreviewModel(playerid, ms_TD_DescriptionItemModel[playerid], ms_Items[playerid][index][ms_ItemModel]);
-		PlayerTextDrawSetStringEx(playerid, ms_TD_DescriptionItemName[playerid], ms_Items[playerid][index][ms_ItemName][0]);
-		PlayerTextDrawSetStringEx(playerid, ms_TD_DescriptionItemText[playerid], ms_Items[playerid][index][ms_ItemDescription][0]);
+		PlayerTextDrawSetString(playerid, ms_TD_DescriptionItemName[playerid], ms_Items[playerid][index][ms_ItemName][0]);
+		PlayerTextDrawSetString(playerid, ms_TD_DescriptionItemText[playerid], ms_Items[playerid][index][ms_ItemDescription][0]);
 	}
 
 	PlayerTextDrawShow(playerid, ms_TD_DescriptionBackground[playerid][0]);
@@ -1165,14 +1152,6 @@ static stock RemovePlayerTD(playerid, &PlayerText:td)
 	return true;
 }
 
-static PlayerTextDrawSetStringEx(playerid, PlayerText:td, string[])
-{
-	new String[64];
-	format(String, sizeof(String), string);
-	strreplace(String, " ", "_", false, 0, -1, 64);
-	return PlayerTextDrawSetString(playerid, td, String);
-}
-
 static stock PlayerText:CreatePlayerTextDrawEx(playerid, Float:x, Float:y, text[],
 							Float:size_x, Float:size_y,
 							Float:textsize_x, Float:textsize_y,
@@ -1189,12 +1168,8 @@ static stock PlayerText:CreatePlayerTextDrawEx(playerid, Float:x, Float:y, text[
 							Float:preview_x= 0.0, Float:preview_y = 0.0, Float:preview_z = 0.0, Float:preview_zoom = 1.0,
 							selectable = 0)
 {
-	new PlayerText:td, String[64];
-
-	format(String, sizeof(String), text);
-	strreplace(String, " ", "_", false, 0, -1, 64);
-
-    td = CreatePlayerTextDraw(playerid, x, y, String);
+	new PlayerText:td;
+    td = CreatePlayerTextDraw(playerid, x, y, text);
 	PlayerTextDrawLetterSize(playerid, td, size_x, size_y);
 	PlayerTextDrawTextSize(playerid, td, textsize_x, textsize_y);
 	PlayerTextDrawAlignment(playerid, td, align);
@@ -1212,53 +1187,6 @@ static stock PlayerText:CreatePlayerTextDrawEx(playerid, Float:x, Float:y, text[
 	return td;
 }
 
-// --> By strlibs.inc
-static stock strreplace(string[], const search[], const replacement[], bool:ignorecase = false, pos = 0, limit = -1, maxlength = sizeof(string)) {
-    // No need to do anything if the limit is 0.
-    if (limit == 0)
-        return 0;
-    
-    new
-             sublen = strlen(search),
-             replen = strlen(replacement),
-        bool:packed = ispacked(string),
-             maxlen = maxlength,
-             len = strlen(string),
-             count = 0
-    ;
-    
-    
-    // "maxlen" holds the max string length (not to be confused with "maxlength", which holds the max. array size).
-    // Since packed strings hold 4 characters per array slot, we multiply "maxlen" by 4.
-    if (packed)
-        maxlen *= 4;
-    
-    // If the length of the substring is 0, we have nothing to look for..
-    if (!sublen)
-        return 0;
-    
-    // In this line we both assign the return value from "strfind" to "pos" then check if it's -1.
-    while (-1 != (pos = strfind(string, search, ignorecase, pos))) {
-        // Delete the string we found
-        strdel(string, pos, pos + sublen);
-        
-        len -= sublen;
-        
-        // If there's anything to put as replacement, insert it. Make sure there's enough room first.
-        if (replen && len + replen < maxlen) {
-            strins(string, replacement, pos, maxlength);
-            
-            pos += replen;
-            len += replen;
-        }
-        
-        // Is there a limit of number of replacements, if so, did we break it?
-        if (limit != -1 && ++count >= limit)
-            break;
-    }
-    
-    return count;
-}
 
 static stock IsNumeric(const string[])
 {
