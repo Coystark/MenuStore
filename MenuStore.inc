@@ -397,48 +397,50 @@ public OnPlayerClickTextDraw(playerid, Text:clickedid)
 		return true;
 	}
 
-
-	if(clickedid == ms_TD_Next)
+	if(ms_Info[playerid][ms_ToggleControll])
 	{
-		if(ms_Info[playerid][ms_CurrentPage] < MenuStore_GetNumbersOfPage(playerid))
+		if(clickedid == ms_TD_Next)
 		{
-			ms_Info[playerid][ms_CurrentPage]++;
-			MenuStore_SetPage(playerid, ms_Info[playerid][ms_CurrentPage]);
-			MenuStore_UnselectRow(playerid);
-			return true;
-		}
-	}
-
-	if(clickedid == ms_TD_Previous)
-	{
-		if(ms_Info[playerid][ms_CurrentPage] > 1)
-		{
-			ms_Info[playerid][ms_CurrentPage]--;
-			MenuStore_SetPage(playerid, ms_Info[playerid][ms_CurrentPage]);
-			MenuStore_UnselectRow(playerid);
-			return true;
-		}
-	}
-
-	if(clickedid == ms_TD_Cart_BackgroundConfirm)
-	{
-		if(MenuStore_GetTotalItemsInCart(playerid) != 0)
-		{
-			new storeid[32] = "store_", itemid;
-			strcat(storeid, ms_Info[playerid][ms_StoreID]);
-
-			for(new i = 0; i < MS_MAX_ITEMS_CART; i++)
+			if(ms_Info[playerid][ms_CurrentPage] < MenuStore_GetNumbersOfPage(playerid))
 			{
-				itemid = ms_Cart[playerid][ms_Cart_ItemID][i];
-				if(itemid != MSTORE_INVALID_ITEM_ID)
-				{
-					CallLocalFunction(storeid, "iiiiiis", playerid, true, itemid, MenuStore_GetItemModelByID(playerid, itemid), (ms_Cart[playerid][ms_Cart_ItemPrice][i] * ms_Cart[playerid][ms_Cart_ItemAmount][i]), ms_Cart[playerid][ms_Cart_ItemAmount][i], MenuStore_GetItemNameByID(playerid, itemid));
-				}
+				ms_Info[playerid][ms_CurrentPage]++;
+				MenuStore_SetPage(playerid, ms_Info[playerid][ms_CurrentPage]);
+				MenuStore_UnselectRow(playerid);
+				return true;
 			}
-
-			MenuStore_Close(playerid);
 		}
-		return true;
+
+		if(clickedid == ms_TD_Previous)
+		{
+			if(ms_Info[playerid][ms_CurrentPage] > 1)
+			{
+				ms_Info[playerid][ms_CurrentPage]--;
+				MenuStore_SetPage(playerid, ms_Info[playerid][ms_CurrentPage]);
+				MenuStore_UnselectRow(playerid);
+				return true;
+			}
+		}
+
+		if(clickedid == ms_TD_Cart_BackgroundConfirm)
+		{
+			if(MenuStore_GetTotalItemsInCart(playerid) != 0)
+			{
+				new storeid[32] = "store_", itemid;
+				strcat(storeid, ms_Info[playerid][ms_StoreID]);
+
+				for(new i = 0; i < MS_MAX_ITEMS_CART; i++)
+				{
+					itemid = ms_Cart[playerid][ms_Cart_ItemID][i];
+					if(itemid != MSTORE_INVALID_ITEM_ID)
+					{
+						CallLocalFunction(storeid, "iiiiiis", playerid, true, itemid, MenuStore_GetItemModelByID(playerid, itemid), (ms_Cart[playerid][ms_Cart_ItemPrice][i] * ms_Cart[playerid][ms_Cart_ItemAmount][i]), ms_Cart[playerid][ms_Cart_ItemAmount][i], MenuStore_GetItemNameByID(playerid, itemid));
+					}
+				}
+
+				MenuStore_Close(playerid);
+			}
+			return true;
+		}
 	}
 
 	return CallLocalFunction("MS_OnPlayerClickTextDraw", "ii", playerid, _:clickedid);
