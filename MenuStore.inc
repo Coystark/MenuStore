@@ -1,5 +1,5 @@
 /*
-	MenuStore - Version 2.0
+	MenuStore - Version 3.0
 	Created by CaioTJF
 */
 
@@ -57,6 +57,11 @@
 
 //-------------------------------------------
 
+#if !defined isnull
+	#define isnull(%1) \
+		((!(%1[0])) || (((%1[0]) == '\1') && (!(%1[1]))))
+#endif
+
 #define STORE:%0(%1) \
 	forward store_%0(%1); public store_%0(%1)
 
@@ -106,32 +111,195 @@ static ms_Cart[MAX_PLAYERS][enum_ms_Cart];
 
 static ms_String[256];
 
-static PlayerText:ms_TD_Backgrounds[MAX_PLAYERS][2];
+// -- Global Textdraws
+
+static Text:ms_TD_Backgrounds[2] = {Text:INVALID_TEXT_DRAW, ...};
+static Text:ms_TD_Next = Text:INVALID_TEXT_DRAW;
+static Text:ms_TD_Previous = Text:INVALID_TEXT_DRAW;
+static Text:ms_TD_DescriptionBackground[2] = {Text:INVALID_TEXT_DRAW, ...};
+
+static Text:ms_TD_Cart_Backgrounds[2] = {Text:INVALID_TEXT_DRAW, ...};
+static Text:ms_TD_Cart_BackgroundConfirm = Text:INVALID_TEXT_DRAW;
+static Text:ms_TD_Cart_CartName = Text:INVALID_TEXT_DRAW;
+
+// -- Player Textdraws
+
 static PlayerText:ms_TD_ItemName[MAX_PLAYERS][MS_MAX_ITEMS_PER_PAGE];
 static PlayerText:ms_TD_ItemPrice[MAX_PLAYERS][MS_MAX_ITEMS_PER_PAGE];
 static PlayerText:ms_TD_ItemModel[MAX_PLAYERS][MS_MAX_ITEMS_PER_PAGE];
 static PlayerText:ms_TD_ItemBackground[MAX_PLAYERS][MS_MAX_ITEMS_PER_PAGE];
 static PlayerText:ms_TD_StoreName[MAX_PLAYERS] = {PlayerText:INVALID_TEXT_DRAW, ...};
-static PlayerText:ms_TD_Next[MAX_PLAYERS] = {PlayerText:INVALID_TEXT_DRAW, ...};
-static PlayerText:ms_TD_Previous[MAX_PLAYERS] = {PlayerText:INVALID_TEXT_DRAW, ...};
 static PlayerText:ms_TD_Pagination[MAX_PLAYERS] = {PlayerText:INVALID_TEXT_DRAW, ...};
-static PlayerText:ms_TD_DescriptionBackground[MAX_PLAYERS][2];
 static PlayerText:ms_TD_DescriptionItemName[MAX_PLAYERS] = {PlayerText:INVALID_TEXT_DRAW, ...};
 static PlayerText:ms_TD_DescriptionItemText[MAX_PLAYERS] = {PlayerText:INVALID_TEXT_DRAW, ...};
 static PlayerText:ms_TD_DescriptionItemModel[MAX_PLAYERS] = {PlayerText:INVALID_TEXT_DRAW, ...};
 
-static PlayerText:ms_TD_Cart_Backgrounds[MAX_PLAYERS][2];
 static PlayerText:ms_TD_Cart_ItemBackground[MAX_PLAYERS][MS_MAX_ITEMS_CART];
 static PlayerText:ms_TD_Cart_ItemName[MAX_PLAYERS][MS_MAX_ITEMS_CART];
 static PlayerText:ms_TD_Cart_ItemClose[MAX_PLAYERS][MS_MAX_ITEMS_CART];
-static PlayerText:ms_TD_Cart_CartName[MAX_PLAYERS] = {PlayerText:INVALID_TEXT_DRAW, ...};
-static PlayerText:ms_TD_Cart_BackgroundConfirm[MAX_PLAYERS] = {PlayerText:INVALID_TEXT_DRAW, ...};
 static PlayerText:ms_TD_Cart_BuyName[MAX_PLAYERS] = {PlayerText:INVALID_TEXT_DRAW, ...};
 static PlayerText:ms_TD_Cart_Total[MAX_PLAYERS] = {PlayerText:INVALID_TEXT_DRAW, ...};
 
 forward PlayerText:CreatePlayerTextDrawEx(playerid, Float:x, Float:y, text[], Float:size_x, Float:size_y, Float:textsize_x, Float:textsize_y, align, color, usebox,	boxcolor, shadow, outline, bg_color, font, proportional, model = 0,	Float:preview_x= 0.0, Float:preview_y = 0.0, Float:preview_z = 0.0, Float:preview_zoom = 1.0, selectable = 0);
+forward Text:CreateTextDrawEx(Float:x, Float:y, text[],	Float:size_x, Float:size_y,	Float:textsize_x, Float:textsize_y,	align, color, usebox, boxcolor,	shadow,	outline, bg_color, font, proportional, model = 0, Float:preview_x = 0.0, Float:preview_y = 0.0, Float:preview_z = 0.0, Float:preview_zoom = 0.0, selectable = 0);
 
 //-------------------------------------------
+
+public OnGameModeInit()
+{
+	ms_TD_Backgrounds[0]  = CreateTextDrawEx(145.500000, 130.499969, "box",
+										0.000000, 30.198539,
+										322.000000, 0.000000,
+										1,
+										-1,
+										1,
+										MS_COLOR_BACKGROUND_1,
+										0,
+										0,
+										255,
+										1,
+										1);
+
+	ms_TD_Backgrounds[1] = CreateTextDrawEx(153.000000, 149.383575, "box",
+										0.000000, 26.226503,
+										315.000000, 0.000000,
+										1,
+										-1,
+										1,
+										MS_COLOR_BACKGROUND_2,
+										0,
+										0,
+										255,
+										1,
+										1);
+
+	ms_TD_Next = CreateTextDrawEx(251.485229, 390.033355, "ld_beat:right",
+							0.000000, 0.000000,
+							11.000000, 13.000000,
+							1,
+							MS_COLOR_TEXT_MAIN,
+							0,
+							0,
+							0,
+							0,
+							255,
+							4,
+							1,
+							0,
+							0.0, 0.0, 0.0, 0.0,
+							1);
+
+	ms_TD_Previous = CreateTextDrawEx(201.945220, 390.033355, "ld_beat:left",
+								0.000000, 0.000000,
+								11.000000, 13.000000,
+								1,
+								MS_COLOR_TEXT_MAIN,
+								0,
+								0,
+								0,
+								0,
+								255,
+								4,
+								1,
+								0,
+								0.0, 0.0, 0.0, 0.0,
+								1);	
+
+	ms_TD_DescriptionBackground[0] = CreateTextDrawEx(333.100463, 130.980590, "box",
+												0.000000, 6.630985,
+												516.000000, 0.000000,
+												1,
+												-1,
+												1,
+												MS_COLOR_DESCRIPTION_BACKGROUND_1,
+												0,
+												0,
+												255,
+												1,
+												1);
+
+	ms_TD_DescriptionBackground[1] = CreateTextDrawEx(335.215118, 133.416717, "box",
+												0.000000, 6.111274,
+												514.000000, 0.000000,
+												1,
+												-1,
+												1,
+												MS_COLOR_DESCRIPTION_BACKGROUND_2,
+												0,
+												0,
+												255,
+												1,
+												1);
+
+
+	ms_TD_Cart_Backgrounds[0] = CreateTextDrawEx(333.201141, 271.666656, "box",
+											0.000000, 14.450012,
+											516.000000, 0.000000,
+											1,
+											-1,
+											1,
+											MS_COLOR_BACKGROUND_1,
+											0,
+											0,
+											255,
+											1,
+											1);
+
+	ms_TD_Cart_Backgrounds[1] = CreateTextDrawEx(341.000000, 290.133575, "box",
+											0.000000, 10.134258,
+											508.000000, 0.000000,
+											1,
+											-1,
+											1,
+											MS_COLOR_BACKGROUND_2,
+											0,
+											0,
+											255,
+											1,
+											1);
+
+	ms_TD_Cart_BackgroundConfirm = CreateTextDrawEx(444.899230, 390.233489, "box",
+									0.000000, 0.850001,
+									507.701690, 15.000000,
+									1,
+									-1,
+									1,
+									MS_COLOR_BACKGROUND_CONFIRM,
+									0,
+									0,
+									255,
+									1,
+									1,
+									0,
+									0.0, 0.0, 0.0, 0.0,
+									1);
+
+	ms_TD_Cart_CartName = CreateTextDrawEx(339.143798, 270.733520, MS_WORD_CART,
+									0.310357, 1.434998,
+									508.000000, 0.0,
+									1,
+									MS_COLOR_TEXT_MAIN,
+									1,
+									0xffffff00,
+									0,
+									0,
+									255,
+									2,
+									1);
+
+	return CallLocalFunction("MS_OnGameModeInit", "");
+
+}
+
+#if defined _ALS_OnGameModeInit
+	#undef OnGameModeInit
+#else
+	#define _ALS_OnGameModeInit
+#endif
+#define OnGameModeInit MS_OnGameModeInit
+
+forward MS_OnGameModeInit();
+
 
 public OnPlayerClickPlayerTextDraw(playerid, PlayerText:playertextid)
 {
@@ -186,28 +354,6 @@ public OnPlayerClickPlayerTextDraw(playerid, PlayerText:playertextid)
 			}
 		}
 
-		if(playertextid == ms_TD_Next[playerid])
-		{
-			if(ms_Info[playerid][ms_CurrentPage] < MenuStore_GetNumbersOfPage(playerid))
-			{
-				ms_Info[playerid][ms_CurrentPage]++;
-				MenuStore_SetPage(playerid, ms_Info[playerid][ms_CurrentPage]);
-				MenuStore_UnselectRow(playerid);
-				return true;
-			}
-		}
-
-		if(playertextid == ms_TD_Previous[playerid])
-		{
-			if(ms_Info[playerid][ms_CurrentPage] > 1)
-			{
-				ms_Info[playerid][ms_CurrentPage]--;
-				MenuStore_SetPage(playerid, ms_Info[playerid][ms_CurrentPage]);
-				MenuStore_UnselectRow(playerid);
-				return true;
-			}
-		}
-
 		for(new row = 0; row < MS_MAX_ITEMS_CART; row++)
 		{
 			if(playertextid == ms_TD_Cart_ItemBackground[playerid][row])
@@ -215,27 +361,6 @@ public OnPlayerClickPlayerTextDraw(playerid, PlayerText:playertextid)
 				MenuStore_RemoveFromCart(playerid, row);
 				return true;
 			}
-		}
-
-		if(playertextid == ms_TD_Cart_BackgroundConfirm[playerid])
-		{
-			if(MenuStore_GetTotalItemsInCart(playerid) != 0)
-			{
-				new storeid[32] = "store_", itemid;
-				strcat(storeid, ms_Info[playerid][ms_StoreID]);
-
-				for(new i = 0; i < MS_MAX_ITEMS_CART; i++)
-				{
-					itemid = ms_Cart[playerid][ms_Cart_ItemID][i];
-					if(itemid != MSTORE_INVALID_ITEM_ID)
-					{
-						CallLocalFunction(storeid, "iiiiiis", playerid, true, itemid, MenuStore_GetItemModelByID(playerid, itemid), (ms_Cart[playerid][ms_Cart_ItemPrice][i] * ms_Cart[playerid][ms_Cart_ItemAmount][i]), ms_Cart[playerid][ms_Cart_ItemAmount][i], MenuStore_GetItemNameByID(playerid, itemid));
-					}
-				}
-
-				MenuStore_Close(playerid);
-			}
-			return true;
 		}
 	}
 
@@ -271,6 +396,50 @@ public OnPlayerClickTextDraw(playerid, Text:clickedid)
 		return true;
 	}
 
+
+	if(clickedid == ms_TD_Next)
+	{
+		if(ms_Info[playerid][ms_CurrentPage] < MenuStore_GetNumbersOfPage(playerid))
+		{
+			ms_Info[playerid][ms_CurrentPage]++;
+			MenuStore_SetPage(playerid, ms_Info[playerid][ms_CurrentPage]);
+			MenuStore_UnselectRow(playerid);
+			return true;
+		}
+	}
+
+	if(clickedid == ms_TD_Previous)
+	{
+		if(ms_Info[playerid][ms_CurrentPage] > 1)
+		{
+			ms_Info[playerid][ms_CurrentPage]--;
+			MenuStore_SetPage(playerid, ms_Info[playerid][ms_CurrentPage]);
+			MenuStore_UnselectRow(playerid);
+			return true;
+		}
+	}
+
+	if(clickedid == ms_TD_Cart_BackgroundConfirm)
+	{
+		if(MenuStore_GetTotalItemsInCart(playerid) != 0)
+		{
+			new storeid[32] = "store_", itemid;
+			strcat(storeid, ms_Info[playerid][ms_StoreID]);
+
+			for(new i = 0; i < MS_MAX_ITEMS_CART; i++)
+			{
+				itemid = ms_Cart[playerid][ms_Cart_ItemID][i];
+				if(itemid != MSTORE_INVALID_ITEM_ID)
+				{
+					CallLocalFunction(storeid, "iiiiiis", playerid, true, itemid, MenuStore_GetItemModelByID(playerid, itemid), (ms_Cart[playerid][ms_Cart_ItemPrice][i] * ms_Cart[playerid][ms_Cart_ItemAmount][i]), ms_Cart[playerid][ms_Cart_ItemAmount][i], MenuStore_GetItemNameByID(playerid, itemid));
+				}
+			}
+
+			MenuStore_Close(playerid);
+		}
+		return true;
+	}
+
 	return CallLocalFunction("MS_OnPlayerClickTextDraw", "ii", playerid, _:clickedid);
 }
 
@@ -297,17 +466,11 @@ public OnPlayerConnect(playerid)
 	}
 
 	ms_TD_StoreName[playerid] = PlayerText:INVALID_TEXT_DRAW;
-	ms_TD_Next[playerid] = PlayerText:INVALID_TEXT_DRAW;
-	ms_TD_Previous[playerid] = PlayerText:INVALID_TEXT_DRAW;
-	ms_TD_Backgrounds[playerid][0] = PlayerText:INVALID_TEXT_DRAW;
-	ms_TD_Backgrounds[playerid][1] = PlayerText:INVALID_TEXT_DRAW;
-	ms_TD_DescriptionBackground[playerid][0] = PlayerText:INVALID_TEXT_DRAW;
-	ms_TD_DescriptionBackground[playerid][1] = PlayerText:INVALID_TEXT_DRAW;
+
 	ms_TD_DescriptionItemName[playerid] = PlayerText:INVALID_TEXT_DRAW;
 	ms_TD_DescriptionItemText[playerid] = PlayerText:INVALID_TEXT_DRAW;
 	ms_TD_DescriptionItemModel[playerid] = PlayerText:INVALID_TEXT_DRAW;
 	
-
 	for(new i = 0; i < MS_MAX_ITEMS_CART; i++) 
 	{
 		ms_TD_Cart_ItemBackground[playerid][i] = PlayerText:INVALID_TEXT_DRAW;
@@ -315,11 +478,6 @@ public OnPlayerConnect(playerid)
 		ms_TD_Cart_ItemClose[playerid][i] = PlayerText:INVALID_TEXT_DRAW;
 	}
 
-	ms_TD_Cart_Backgrounds[playerid][0] = PlayerText:INVALID_TEXT_DRAW;
-	ms_TD_Cart_Backgrounds[playerid][1] = PlayerText:INVALID_TEXT_DRAW;
-
-	ms_TD_Cart_CartName[playerid] = PlayerText:INVALID_TEXT_DRAW;
-	ms_TD_Cart_BackgroundConfirm[playerid] = PlayerText:INVALID_TEXT_DRAW;
 	ms_TD_Cart_BuyName[playerid] = PlayerText:INVALID_TEXT_DRAW;
 	ms_TD_Cart_Total[playerid] = PlayerText:INVALID_TEXT_DRAW;
 
@@ -346,7 +504,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		MenuStore_ToggleControll(playerid, true);
 		MenStore_CloseDescription(playerid);
 
-		if(!response || ms_Info[playerid][ms_Selected] == -1 || !IsNumeric(inputtext))
+		if(!response || ms_Info[playerid][ms_Selected] == -1 || !IsNumeric(inputtext) || isnull(inputtext))
 		{
 			MenuStore_UnselectRow(playerid);
 			return true;
@@ -355,8 +513,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		new index = ms_Info[playerid][ms_Selected]+(MS_MAX_ITEMS_PER_PAGE * (ms_Info[playerid][ms_CurrentPage] - 1));
 		MenuStore_UnselectRow(playerid);
 
-
-		if(1 < strval(inputtext) > ms_Items[playerid][index][ms_ItemStack])
+		if(strval(inputtext) < 1 || strval(inputtext) > ms_Items[playerid][index][ms_ItemStack])
 			return true;
 
 		MenuStore_AddToCart(playerid, ms_Items[playerid][index][ms_ItemID], ms_Items[playerid][index][ms_ItemPrice], strval(inputtext));
@@ -757,32 +914,8 @@ stock MenuStore_Open(playerid, menuid[], store_name[], money_sign[] = MS_DEFAULT
 	format(ms_Info[playerid][ms_MoneySign], 32, money_sign);
 	format(ms_Info[playerid][ms_StoreID], 32, menuid);
 
-
-	ms_TD_Backgrounds[playerid][0]  = CreatePlayerTextDrawEx(playerid, 145.500000, 130.499969, "box",
-										0.000000, 30.198539,
-										322.000000, 0.000000,
-										1,
-										-1,
-										1,
-										MS_COLOR_BACKGROUND_1,
-										0,
-										0,
-										255,
-										1,
-										1);
-
-	ms_TD_Backgrounds[playerid][1] = CreatePlayerTextDrawEx(playerid, 153.000000, 149.383575, "box",
-										0.000000, 26.226503,
-										315.000000, 0.000000,
-										1,
-										-1,
-										1,
-										MS_COLOR_BACKGROUND_2,
-										0,
-										0,
-										255,
-										1,
-										1);
+	TextDrawShowForPlayer(playerid, ms_TD_Backgrounds[0]);
+	TextDrawShowForPlayer(playerid, ms_TD_Backgrounds[1]);
 
 	ms_TD_StoreName[playerid] = CreatePlayerTextDrawEx(playerid, 150.843780, 129.850082, store_name,
 								0.310358, 1.434999,
@@ -799,87 +932,13 @@ stock MenuStore_Open(playerid, menuid[], store_name[], money_sign[] = MS_DEFAULT
 
 	if(ms_Info[playerid][ms_TotalItems] > MS_MAX_ITEMS_PER_PAGE)
 	{
-		ms_TD_Next[playerid] = CreatePlayerTextDrawEx(playerid, 251.485229, 390.033355, "ld_beat:right",
-									0.000000, 0.000000,
-									11.000000, 13.000000,
-									1,
-									MS_COLOR_TEXT_MAIN,
-									0,
-									0,
-									0,
-									0,
-									255,
-									4,
-									1,
-									0,
-									0.0, 0.0, 0.0, 0.0,
-									1);
-
-		ms_TD_Previous[playerid] = CreatePlayerTextDrawEx(playerid, 201.945220, 390.033355, "ld_beat:left",
-									0.000000, 0.000000,
-									11.000000, 13.000000,
-									1,
-									MS_COLOR_TEXT_MAIN,
-									0,
-									0,
-									0,
-									0,
-									255,
-									4,
-									1,
-									0,
-									0.0, 0.0, 0.0, 0.0,
-									1);
-
-		PlayerTextDrawShow(playerid, ms_TD_Previous[playerid]);
-		PlayerTextDrawShow(playerid, ms_TD_Next[playerid]);
+		TextDrawShowForPlayer(playerid, ms_TD_Previous);
+		TextDrawShowForPlayer(playerid, ms_TD_Next);
 	}
 
 	PlayerTextDrawShow(playerid, ms_TD_StoreName[playerid]);
-	PlayerTextDrawShow(playerid, ms_TD_Backgrounds[playerid][0]);
-	PlayerTextDrawShow(playerid, ms_TD_Backgrounds[playerid][1]);
 
 	// Cart
-
-	ms_TD_Cart_Backgrounds[playerid][0] = CreatePlayerTextDrawEx(playerid, 333.201141, 271.666656, "box",
-											0.000000, 14.450012,
-											516.000000, 0.000000,
-											1,
-											-1,
-											1,
-											MS_COLOR_BACKGROUND_1,
-											0,
-											0,
-											255,
-											1,
-											1);
-
-	ms_TD_Cart_Backgrounds[playerid][1] = CreatePlayerTextDrawEx(playerid, 341.000000, 290.133575, "box",
-											0.000000, 10.134258,
-											508.000000, 0.000000,
-											1,
-											-1,
-											1,
-											MS_COLOR_BACKGROUND_2,
-											0,
-											0,
-											255,
-											1,
-											1);
-
-	ms_TD_Cart_CartName[playerid] = CreatePlayerTextDrawEx(playerid, 339.143798, 270.733520, MS_WORD_CART,
-									0.310357, 1.434998,
-									508.000000, 0.0,
-									1,
-									MS_COLOR_TEXT_MAIN,
-									1,
-									0xffffff00,
-									0,
-									0,
-									255,
-									2,
-									1);
-
 
 	format(ms_String, sizeof(ms_String), ""#MS_WORD_TOTAL": %s0", ms_Info[playerid][ms_MoneySign]);
 	ms_TD_Cart_Total[playerid] = CreatePlayerTextDrawEx(playerid, 339.200012, 386.949951, ms_String,
@@ -895,22 +954,6 @@ stock MenuStore_Open(playerid, menuid[], store_name[], money_sign[] = MS_DEFAULT
 							2,
 							1);
 
-	ms_TD_Cart_BackgroundConfirm[playerid] = CreatePlayerTextDrawEx(playerid, 444.899230, 390.233489, "box",
-							0.000000, 0.850001,
-							507.701690, 15.000000,
-							1,
-							-1,
-							1,
-							MS_COLOR_BACKGROUND_CONFIRM,
-							0,
-							0,
-							255,
-							1,
-							1,
-							0,
-							0.0, 0.0, 0.0, 0.0,
-							1);
-
 	ms_TD_Cart_BuyName[playerid] = CreatePlayerTextDrawEx(playerid, 476.000152, 386.683441, button_confirm,
 							0.282000, 1.442499,
 							0.000000, 61.000000,
@@ -924,10 +967,11 @@ stock MenuStore_Open(playerid, menuid[], store_name[], money_sign[] = MS_DEFAULT
 							2,
 							1);
 
-	PlayerTextDrawShow(playerid, ms_TD_Cart_CartName[playerid]);
-	PlayerTextDrawShow(playerid, ms_TD_Cart_Backgrounds[playerid][0]);
-	PlayerTextDrawShow(playerid, ms_TD_Cart_Backgrounds[playerid][1]);
-	PlayerTextDrawShow(playerid, ms_TD_Cart_BackgroundConfirm[playerid]);
+	TextDrawShowForPlayer(playerid, ms_TD_Cart_Backgrounds[0]);
+	TextDrawShowForPlayer(playerid, ms_TD_Cart_Backgrounds[1]);
+	TextDrawShowForPlayer(playerid, ms_TD_Cart_BackgroundConfirm);
+	TextDrawShowForPlayer(playerid, ms_TD_Cart_CartName);
+
 	PlayerTextDrawShow(playerid, ms_TD_Cart_BuyName[playerid]);
 	PlayerTextDrawShow(playerid, ms_TD_Cart_Total[playerid]);
 
@@ -944,16 +988,20 @@ stock MenuStore_Close(playerid)
 	MenuStore_UnselectRow(playerid);
 	MenStore_CloseDescription(playerid);
 
-	RemovePlayerTD(playerid, ms_TD_StoreName[playerid]);
-	RemovePlayerTD(playerid, ms_TD_Previous[playerid]);
-	RemovePlayerTD(playerid, ms_TD_Next[playerid]);
-	RemovePlayerTD(playerid, ms_TD_Backgrounds[playerid][0]);
-	RemovePlayerTD(playerid, ms_TD_Backgrounds[playerid][1]);
+	TextDrawHideForPlayer(playerid, ms_TD_Backgrounds[0]);
+	TextDrawHideForPlayer(playerid, ms_TD_Backgrounds[1]);
+	TextDrawHideForPlayer(playerid, ms_TD_Previous);
+	TextDrawHideForPlayer(playerid, ms_TD_Next);
 
-	RemovePlayerTD(playerid, ms_TD_Cart_CartName[playerid]);
-	RemovePlayerTD(playerid, ms_TD_Cart_Backgrounds[playerid][0]);
-	RemovePlayerTD(playerid, ms_TD_Cart_Backgrounds[playerid][1]);
-	RemovePlayerTD(playerid, ms_TD_Cart_BackgroundConfirm[playerid]);
+	RemovePlayerTD(playerid, ms_TD_StoreName[playerid]);
+
+	// Cart TextDraws
+
+	TextDrawHideForPlayer(playerid, ms_TD_Cart_Backgrounds[0]);
+	TextDrawHideForPlayer(playerid, ms_TD_Cart_Backgrounds[1]);
+	TextDrawHideForPlayer(playerid, ms_TD_Cart_BackgroundConfirm);
+	TextDrawHideForPlayer(playerid, ms_TD_Cart_CartName);
+
 	RemovePlayerTD(playerid, ms_TD_Cart_BuyName[playerid]);
 	RemovePlayerTD(playerid, ms_TD_Cart_Total[playerid]);
 
@@ -1007,35 +1055,8 @@ stock MenuStore_OpenDescription(playerid, index)
 		return false;
 
 
-	if(_:ms_TD_DescriptionBackground[playerid][0] == INVALID_TEXT_DRAW)
+	if(_:ms_TD_DescriptionItemModel[playerid] == INVALID_TEXT_DRAW)
 	{
-		
-		ms_TD_DescriptionBackground[playerid][0] = CreatePlayerTextDrawEx(playerid, 333.100463, 130.980590, "box",
-												0.000000, 6.630985,
-												516.000000, 0.000000,
-												1,
-												-1,
-												1,
-												MS_COLOR_DESCRIPTION_BACKGROUND_1,
-												0,
-												0,
-												255,
-												1,
-												1);
-
-		ms_TD_DescriptionBackground[playerid][1] = CreatePlayerTextDrawEx(playerid, 335.215118, 133.416717, "box",
-												0.000000, 6.111274,
-												514.000000, 0.000000,
-												1,
-												-1,
-												1,
-												MS_COLOR_DESCRIPTION_BACKGROUND_2,
-												0,
-												0,
-												255,
-												1,
-												1);
-
 		ms_TD_DescriptionItemName[playerid] = CreatePlayerTextDrawEx(playerid, 392.611175, 134.333419, ms_Items[playerid][index][ms_ItemName][0],
 												0.225572, 1.349166,
 												514.000000, 0.0,
@@ -1090,8 +1111,9 @@ stock MenuStore_OpenDescription(playerid, index)
 		PlayerTextDrawSetString(playerid, ms_TD_DescriptionItemText[playerid], ms_Items[playerid][index][ms_ItemDescription][0]);
 	}
 
-	PlayerTextDrawShow(playerid, ms_TD_DescriptionBackground[playerid][0]);
-	PlayerTextDrawShow(playerid, ms_TD_DescriptionBackground[playerid][1]);
+	TextDrawShowForPlayer(playerid, ms_TD_DescriptionBackground[0]);
+	TextDrawShowForPlayer(playerid, ms_TD_DescriptionBackground[1]);
+	
 	PlayerTextDrawShow(playerid, ms_TD_DescriptionItemName[playerid]);
 	PlayerTextDrawShow(playerid, ms_TD_DescriptionItemText[playerid]);
 	PlayerTextDrawShow(playerid, ms_TD_DescriptionItemModel[playerid]);
@@ -1101,8 +1123,9 @@ stock MenuStore_OpenDescription(playerid, index)
 
 stock MenStore_CloseDescription(playerid)
 {
-	RemovePlayerTD(playerid, ms_TD_DescriptionBackground[playerid][0]);
-	RemovePlayerTD(playerid, ms_TD_DescriptionBackground[playerid][1]);
+	TextDrawHideForPlayer(playerid, ms_TD_DescriptionBackground[0]);
+	TextDrawHideForPlayer(playerid, ms_TD_DescriptionBackground[1]);
+
 	RemovePlayerTD(playerid, ms_TD_DescriptionItemName[playerid]);
 	RemovePlayerTD(playerid, ms_TD_DescriptionItemText[playerid]);
 	RemovePlayerTD(playerid, ms_TD_DescriptionItemModel[playerid]);
@@ -1184,6 +1207,41 @@ static stock PlayerText:CreatePlayerTextDrawEx(playerid, Float:x, Float:y, text[
 	PlayerTextDrawSetPreviewModel(playerid, td, model);
 	PlayerTextDrawSetPreviewRot(playerid, td, preview_x, preview_y, preview_z, preview_zoom);
 	PlayerTextDrawSetSelectable(playerid, td, selectable);
+	return td;
+}
+
+static stock Text:CreateTextDrawEx(Float:x, Float:y, text[],
+					Float:size_x, Float:size_y,
+					Float:textsize_x, Float:textsize_y,
+					align,
+					color,
+					usebox,
+					boxcolor,
+					shadow,
+					outline,
+					bg_color,
+					font,
+					proportional,
+					model = 0,
+					Float:preview_x = 0.0, Float:preview_y = 0.0, Float:preview_z = 0.0, Float:preview_zoom = 0.0,
+					selectable = 0)
+{
+	new Text:td;
+	td = TextDrawCreate(x, y, text);
+	TextDrawLetterSize(td, size_x, size_y);
+	TextDrawTextSize(td, textsize_x, textsize_y);
+	TextDrawAlignment(td, align);
+	TextDrawColor(td, color);
+	TextDrawUseBox(td, usebox);
+	TextDrawBoxColor(td, boxcolor);
+	TextDrawSetShadow(td, shadow);
+	TextDrawSetOutline(td, outline);
+	TextDrawBackgroundColor(td, bg_color);
+	TextDrawFont(td, font);
+	TextDrawSetProportional(td, proportional);
+	TextDrawSetPreviewModel(td, model);
+	TextDrawSetPreviewRot(td, preview_x, preview_y, preview_z, preview_zoom);
+	TextDrawSetSelectable(td, selectable);
 	return td;
 }
 
