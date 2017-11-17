@@ -79,7 +79,7 @@ enum enum_ms_Items
 	ms_ItemStack,
 	ms_ItemName[32],
 	ms_ItemDescription[64],
-	Float:ms_ItemItemPreviewRot[4]
+	Float:ms_ItemPreviewRot[4]
 }		
 
 static ms_Items[MAX_PLAYERS][MS_MAX_ITEMS][enum_ms_Items];
@@ -327,7 +327,7 @@ public OnPlayerClickPlayerTextDraw(playerid, PlayerText:playertextid)
 					{
 						MenuStore_AddToCart(playerid, ms_Items[playerid][index][ms_ItemID], ms_Items[playerid][index][ms_ItemPrice], ms_Items[playerid][index][ms_ItemStack]);
 						MenuStore_UnselectRow(playerid);
-						MenStore_CloseDescription(playerid);
+						MenuStore_CloseDescription(playerid);
 					}
 
 					ms_Info[playerid][ms_DoubleClickRow] = -1;
@@ -343,7 +343,7 @@ public OnPlayerClickPlayerTextDraw(playerid, PlayerText:playertextid)
 				if(ms_Info[playerid][ms_Selected] == i)
 				{
 					MenuStore_UnselectRow(playerid);
-					MenStore_CloseDescription(playerid);
+					MenuStore_CloseDescription(playerid);
 					return true;
 				}
 				else if(ms_Info[playerid][ms_Selected] != -1)
@@ -505,7 +505,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	if(dialogid == DIALOG_MSTORE)
 	{
 		MenuStore_ToggleControll(playerid, true);
-		MenStore_CloseDescription(playerid);
+		MenuStore_CloseDescription(playerid);
 
 		if(!response || ms_Info[playerid][ms_Selected] == -1 || isnull(inputtext))
 		{
@@ -640,7 +640,7 @@ stock MenuStore_SetPage(playerid, pageid)
 										5,
 										0,
 										ms_Items[playerid][i][ms_ItemModel],
-										ms_Items[playerid][i][ms_ItemItemPreviewRot][0], ms_Items[playerid][i][ms_ItemItemPreviewRot][1], ms_Items[playerid][i][ms_ItemItemPreviewRot][2], ms_Items[playerid][i][ms_ItemItemPreviewRot][3]);
+										ms_Items[playerid][i][ms_ItemPreviewRot][0], ms_Items[playerid][i][ms_ItemPreviewRot][1], ms_Items[playerid][i][ms_ItemPreviewRot][2], ms_Items[playerid][i][ms_ItemPreviewRot][3]);
 
 		lane_break++;
 
@@ -896,10 +896,10 @@ stock MenuStore_AddItem(playerid, itemid, modelid, name[], price, description[] 
 			ms_Items[playerid][i][ms_ItemStack] = stack;
 			format(ms_Items[playerid][i][ms_ItemName][0], 32, name);
 			format(ms_Items[playerid][i][ms_ItemDescription][0], 64, description);
-			ms_Items[playerid][i][ms_ItemItemPreviewRot][0] = rotX;
-			ms_Items[playerid][i][ms_ItemItemPreviewRot][1] = rotY;
-			ms_Items[playerid][i][ms_ItemItemPreviewRot][2] = rotZ;
-			ms_Items[playerid][i][ms_ItemItemPreviewRot][3] = zoom;
+			ms_Items[playerid][i][ms_ItemPreviewRot][0] = rotX;
+			ms_Items[playerid][i][ms_ItemPreviewRot][1] = rotY;
+			ms_Items[playerid][i][ms_ItemPreviewRot][2] = rotZ;
+			ms_Items[playerid][i][ms_ItemPreviewRot][3] = zoom;
 
 			ms_Info[playerid][ms_TotalItems]++;
 			break;
@@ -989,7 +989,7 @@ stock MenuStore_Close(playerid)
 
 	CancelSelectTextDraw(playerid);
 	MenuStore_UnselectRow(playerid);
-	MenStore_CloseDescription(playerid);
+	MenuStore_CloseDescription(playerid);
 
 	TextDrawHideForPlayer(playerid, ms_TD_Backgrounds[0]);
 	TextDrawHideForPlayer(playerid, ms_TD_Backgrounds[1]);
@@ -1098,7 +1098,7 @@ stock MenuStore_OpenDescription(playerid, index)
 												5,
 												0,
 												ms_Items[playerid][index][ms_ItemModel],
-												ms_Items[playerid][index][ms_ItemItemPreviewRot][0], ms_Items[playerid][index][ms_ItemItemPreviewRot][1], ms_Items[playerid][index][ms_ItemItemPreviewRot][2], ms_Items[playerid][index][ms_ItemItemPreviewRot][3]);
+												ms_Items[playerid][index][ms_ItemPreviewRot][0], ms_Items[playerid][index][ms_ItemPreviewRot][1], ms_Items[playerid][index][ms_ItemPreviewRot][2], ms_Items[playerid][index][ms_ItemPreviewRot][3]);
 	}
 	else
 	{
@@ -1107,7 +1107,7 @@ stock MenuStore_OpenDescription(playerid, index)
 		PlayerTextDrawHide(playerid, ms_TD_DescriptionItemModel[playerid]);
 
 		PlayerTextDrawSetPreviewModel(playerid, ms_TD_DescriptionItemModel[playerid], ms_Items[playerid][index][ms_ItemModel]);
-		PlayerTextDrawSetPreviewRot(playerid, ms_TD_DescriptionItemModel[playerid], ms_Items[playerid][index][ms_ItemItemPreviewRot][0], ms_Items[playerid][index][ms_ItemItemPreviewRot][1], ms_Items[playerid][index][ms_ItemItemPreviewRot][2], ms_Items[playerid][index][ms_ItemItemPreviewRot][3]);
+		PlayerTextDrawSetPreviewRot(playerid, ms_TD_DescriptionItemModel[playerid], ms_Items[playerid][index][ms_ItemPreviewRot][0], ms_Items[playerid][index][ms_ItemPreviewRot][1], ms_Items[playerid][index][ms_ItemPreviewRot][2], ms_Items[playerid][index][ms_ItemPreviewRot][3]);
 
 		PlayerTextDrawSetString(playerid, ms_TD_DescriptionItemName[playerid], ms_Items[playerid][index][ms_ItemName][0]);
 		PlayerTextDrawSetString(playerid, ms_TD_DescriptionItemText[playerid], ms_Items[playerid][index][ms_ItemDescription][0]);
@@ -1122,7 +1122,7 @@ stock MenuStore_OpenDescription(playerid, index)
 	return true;
 }
 
-stock MenStore_CloseDescription(playerid)
+stock MenuStore_CloseDescription(playerid)
 {
 	TextDrawHideForPlayer(playerid, ms_TD_DescriptionBackground[0]);
 	TextDrawHideForPlayer(playerid, ms_TD_DescriptionBackground[1]);
@@ -1143,7 +1143,7 @@ stock MenuStore_ResetVariables(playerid)
 		ms_Items[playerid][i][ms_ItemStack] = 0;
 		ms_Items[playerid][i][ms_ItemName][0] = EOS;
 		ms_Items[playerid][i][ms_ItemDescription][0] = EOS;
-		ms_Items[playerid][i][ms_ItemItemPreviewRot][0] = ms_Items[playerid][i][ms_ItemItemPreviewRot][1] = ms_Items[playerid][i][ms_ItemItemPreviewRot][2] = ms_Items[playerid][i][ms_ItemItemPreviewRot][3] = 0.0;
+		ms_Items[playerid][i][ms_ItemPreviewRot][0] = ms_Items[playerid][i][ms_ItemPreviewRot][1] = ms_Items[playerid][i][ms_ItemPreviewRot][2] = ms_Items[playerid][i][ms_ItemPreviewRot][3] = 0.0;
 	}
 
 	for(new i = 0; i < MS_MAX_ITEMS_CART; i++)
