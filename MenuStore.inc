@@ -300,6 +300,7 @@ public OnGameModeInit()
 
 forward MS_OnGameModeInit();
 
+//-------------------------------------------
 
 public OnPlayerClickPlayerTextDraw(playerid, PlayerText:playertextid)
 {
@@ -504,7 +505,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		MenuStore_ToggleControll(playerid, true);
 		MenStore_CloseDescription(playerid);
 
-		if(!response || ms_Info[playerid][ms_Selected] == -1 || !IsNumeric(inputtext) || isnull(inputtext))
+		if(!response || ms_Info[playerid][ms_Selected] == -1 || isnull(inputtext))
 		{
 			MenuStore_UnselectRow(playerid);
 			return true;
@@ -1054,7 +1055,6 @@ stock MenuStore_OpenDescription(playerid, index)
 	if(ms_Info[playerid][ms_Selected] == -1)
 		return false;
 
-
 	if(_:ms_TD_DescriptionItemModel[playerid] == INVALID_TEXT_DRAW)
 	{
 		ms_TD_DescriptionItemName[playerid] = CreatePlayerTextDrawEx(playerid, 392.611175, 134.333419, ms_Items[playerid][index][ms_ItemName][0],
@@ -1117,7 +1117,6 @@ stock MenuStore_OpenDescription(playerid, index)
 	PlayerTextDrawShow(playerid, ms_TD_DescriptionItemName[playerid]);
 	PlayerTextDrawShow(playerid, ms_TD_DescriptionItemText[playerid]);
 	PlayerTextDrawShow(playerid, ms_TD_DescriptionItemModel[playerid]);
-
 	return true;
 }
 
@@ -1243,14 +1242,4 @@ static stock Text:CreateTextDrawEx(Float:x, Float:y, text[],
 	TextDrawSetPreviewRot(td, preview_x, preview_y, preview_z, preview_zoom);
 	TextDrawSetSelectable(td, selectable);
 	return td;
-}
-
-
-static stock IsNumeric(const string[])
-{
-	for (new i = 0, j = strlen(string); i < j; i++)
-	{
-		if (string[i] > '9' || string[i] < '0') return 0;
-	}
-    return 1;
 }
