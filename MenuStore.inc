@@ -20,7 +20,6 @@
 #define MS_MAX_ITEMS (MS_MAX_ITEMS_PER_PAGE*5) // --> Limit of 5 Pages
 #define MS_DEFAULT_MONEY_SIGN "$"
 #define MS_DEFAULT_CONFIRM "Buy"
-#define MS_DEFAULT_BONUS_SIZE_DESCRIPTION 0.0
 
 #define MS_COLOR_SELECT_TD 0xffffffFF
 #define MS_COLOR_TEXT_MAIN 0xffffffFF
@@ -859,7 +858,7 @@ stock MenuStore_UpdateCart(playerid)
 	}
 }
 
-stock MenuStore_AddItem(playerid, itemid, modelid, name[], price, description[] = EOS, Float:description_size = MS_DEFAULT_BONUS_SIZE_DESCRIPTION, bool:description_line_jump = true, stack = 1, Float:rotX = 0.0, Float:rotY = 0.0, Float:rotZ = 0.0, Float:zoom = 1.0)
+stock MenuStore_AddItem(playerid, itemid, modelid, name[], price, description[] = EOS, Float:description_size = 0.0, bool:description_line_jump = true, stack = 1, Float:rotX = 0.0, Float:rotY = 0.0, Float:rotZ = 0.0, Float:zoom = 1.0)
 {
 	for(new i = 0; i < MS_MAX_ITEMS; i++)
 		if(ms_Items[playerid][i][ms_ItemID] == itemid)
@@ -1173,7 +1172,7 @@ stock MenuStore_ResetVariables(playerid)
 		ms_Items[playerid][i][ms_ItemDescription][0] = EOS;
 		ms_Items[playerid][i][ms_ItemPreviewRot][0] = ms_Items[playerid][i][ms_ItemPreviewRot][1] = ms_Items[playerid][i][ms_ItemPreviewRot][2] = ms_Items[playerid][i][ms_ItemPreviewRot][3] = 0.0;
 		ms_Items[playerid][i][ms_ItemLineJump] = true;
-		ms_Items[playerid][i][ms_ItemDescriptionBonus] = MS_DEFAULT_BONUS_SIZE_DESCRIPTION;
+		ms_Items[playerid][i][ms_ItemDescriptionBonus] = 0.0;
 	}
 
 	for(new i = 0; i < MS_MAX_ITEMS_CART; i++)
