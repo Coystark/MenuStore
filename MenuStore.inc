@@ -1,5 +1,5 @@
 /*
-	MenuStore - Version 3.0
+	MenuStore - Version 4.0
 	Created by CaioTJF
 */
 
@@ -11,6 +11,7 @@
 #define MS_MAX_ITEMS_PER_PAGE 6
 #define MS_MAX_ITEMS_CART 4
 #define MSTORE_INVALID_ITEM_ID -1
+#define MS_MAX_SIZE_DESCRIPTION	7.5
 
 /*
 	You can change
@@ -19,6 +20,7 @@
 #define MS_MAX_ITEMS (MS_MAX_ITEMS_PER_PAGE*5) // --> Limit of 5 Pages
 #define MS_DEFAULT_MONEY_SIGN "$"
 #define MS_DEFAULT_CONFIRM "Buy"
+#define MS_DEFAULT_BONUS_SIZE_DESCRIPTION 0.0
 
 #define MS_COLOR_SELECT_TD 0xffffffFF
 #define MS_COLOR_TEXT_MAIN 0xffffffFF
@@ -77,8 +79,10 @@ enum enum_ms_Items
 	ms_ItemModel,
 	ms_ItemPrice,
 	ms_ItemStack,
-	ms_ItemName[32],
-	ms_ItemDescription[64],
+	ms_ItemName[32 char],
+	ms_ItemDescription[256 char],
+	Float:ms_ItemDescriptionBonus,
+	bool:ms_ItemLineJump,
 	Float:ms_ItemPreviewRot[4]
 }		
 
@@ -116,7 +120,6 @@ static ms_String[256];
 static Text:ms_TD_Backgrounds[2] = {Text:INVALID_TEXT_DRAW, ...};
 static Text:ms_TD_Next = Text:INVALID_TEXT_DRAW;
 static Text:ms_TD_Previous = Text:INVALID_TEXT_DRAW;
-static Text:ms_TD_DescriptionBackground[2] = {Text:INVALID_TEXT_DRAW, ...};
 
 static Text:ms_TD_Cart_Backgrounds[2] = {Text:INVALID_TEXT_DRAW, ...};
 static Text:ms_TD_Cart_BackgroundConfirm = Text:INVALID_TEXT_DRAW;
@@ -133,6 +136,7 @@ static PlayerText:ms_TD_Pagination[MAX_PLAYERS] = {PlayerText:INVALID_TEXT_DRAW,
 static PlayerText:ms_TD_DescriptionItemName[MAX_PLAYERS] = {PlayerText:INVALID_TEXT_DRAW, ...};
 static PlayerText:ms_TD_DescriptionItemText[MAX_PLAYERS] = {PlayerText:INVALID_TEXT_DRAW, ...};
 static PlayerText:ms_TD_DescriptionItemModel[MAX_PLAYERS] = {PlayerText:INVALID_TEXT_DRAW, ...};
+static PlayerText:ms_TD_DescriptionBackground[MAX_PLAYERS][2];
 
 static PlayerText:ms_TD_Cart_ItemBackground[MAX_PLAYERS][MS_MAX_ITEMS_CART];
 static PlayerText:ms_TD_Cart_ItemName[MAX_PLAYERS][MS_MAX_ITEMS_CART];
@@ -204,33 +208,6 @@ public OnGameModeInit()
 								0,
 								0.0, 0.0, 0.0, 0.0,
 								1);	
-
-	ms_TD_DescriptionBackground[0] = CreateTextDrawEx(333.100463, 130.980590, "box",
-												0.000000, 6.630985,
-												516.000000, 0.000000,
-												1,
-												-1,
-												1,
-												MS_COLOR_DESCRIPTION_BACKGROUND_1,
-												0,
-												0,
-												255,
-												1,
-												1);
-
-	ms_TD_DescriptionBackground[1] = CreateTextDrawEx(335.215118, 133.416717, "box",
-												0.000000, 6.111274,
-												514.000000, 0.000000,
-												1,
-												-1,
-												1,
-												MS_COLOR_DESCRIPTION_BACKGROUND_2,
-												0,
-												0,
-												255,
-												1,
-												1);
-
 
 	ms_TD_Cart_Backgrounds[0] = CreateTextDrawEx(333.201141, 271.666656, "box",
 											0.000000, 14.450012,
@@ -473,6 +450,8 @@ public OnPlayerConnect(playerid)
 	ms_TD_DescriptionItemName[playerid] = PlayerText:INVALID_TEXT_DRAW;
 	ms_TD_DescriptionItemText[playerid] = PlayerText:INVALID_TEXT_DRAW;
 	ms_TD_DescriptionItemModel[playerid] = PlayerText:INVALID_TEXT_DRAW;
+	ms_TD_DescriptionBackground[playerid][0] = PlayerText:INVALID_TEXT_DRAW;
+	ms_TD_DescriptionBackground[playerid][1] = PlayerText:INVALID_TEXT_DRAW;
 	
 	for(new i = 0; i < MS_MAX_ITEMS_CART; i++) 
 	{
@@ -766,7 +745,7 @@ stock MenuStore_GetItemNameByID(playerid, id)
 	{
 		if(ms_Items[playerid][i][ms_ItemID] == id)
 		{
-			format(ms_String, sizeof(ms_String), ms_Items[playerid][i][ms_ItemName]);
+			strunpack(ms_String, ms_Items[playerid][i][ms_ItemName]);
 			return ms_String;
 		}
 	}
@@ -880,7 +859,7 @@ stock MenuStore_UpdateCart(playerid)
 	}
 }
 
-stock MenuStore_AddItem(playerid, itemid, modelid, name[], price, description[] = EOS, stack = 1, Float:rotX = 0.0, Float:rotY = 0.0, Float:rotZ = 0.0, Float:zoom = 1.0)
+stock MenuStore_AddItem(playerid, itemid, modelid, name[], price, description[] = EOS, Float:description_size = MS_DEFAULT_BONUS_SIZE_DESCRIPTION, bool:description_line_jump = true, stack = 1, Float:rotX = 0.0, Float:rotY = 0.0, Float:rotZ = 0.0, Float:zoom = 1.0)
 {
 	for(new i = 0; i < MS_MAX_ITEMS; i++)
 		if(ms_Items[playerid][i][ms_ItemID] == itemid)
@@ -894,8 +873,19 @@ stock MenuStore_AddItem(playerid, itemid, modelid, name[], price, description[] 
 			ms_Items[playerid][i][ms_ItemModel] = modelid;
 			ms_Items[playerid][i][ms_ItemPrice] = price;
 			ms_Items[playerid][i][ms_ItemStack] = stack;
-			format(ms_Items[playerid][i][ms_ItemName][0], 32, name);
-			format(ms_Items[playerid][i][ms_ItemDescription][0], 64, description);
+
+			strpack(ms_Items[playerid][i][ms_ItemName], name);
+			strpack(ms_Items[playerid][i][ms_ItemDescription], description);
+			
+			if(description_size > MS_MAX_SIZE_DESCRIPTION) {
+				ms_Items[playerid][i][ms_ItemDescriptionBonus] = MS_MAX_SIZE_DESCRIPTION;
+			}
+			else {
+				ms_Items[playerid][i][ms_ItemDescriptionBonus] = description_size;
+			}
+
+			ms_Items[playerid][i][ms_ItemLineJump] = description_line_jump;
+
 			ms_Items[playerid][i][ms_ItemPreviewRot][0] = rotX;
 			ms_Items[playerid][i][ms_ItemPreviewRot][1] = rotY;
 			ms_Items[playerid][i][ms_ItemPreviewRot][2] = rotZ;
@@ -1059,7 +1049,33 @@ stock MenuStore_OpenDescription(playerid, index)
 
 	if(_:ms_TD_DescriptionItemModel[playerid] == INVALID_TEXT_DRAW)
 	{
-		ms_TD_DescriptionItemName[playerid] = CreatePlayerTextDrawEx(playerid, 392.611175, 134.333419, ms_Items[playerid][index][ms_ItemName][0],
+		ms_TD_DescriptionBackground[playerid][0] = CreatePlayerTextDrawEx(playerid, 333.100463, 130.980590, "box",
+												0.000000, (6.630985+ms_Items[playerid][index][ms_ItemDescriptionBonus]),
+												516.000000, 0.000000,
+												1,
+												-1,
+												1,
+												MS_COLOR_DESCRIPTION_BACKGROUND_1,
+												0,
+												0,
+												255,
+												1,
+												1);
+
+		ms_TD_DescriptionBackground[playerid][1] = CreatePlayerTextDrawEx(playerid, 335.215118, 133.416717, "box",
+												0.000000, (6.111274+ms_Items[playerid][index][ms_ItemDescriptionBonus]),
+												514.000000, 0.000000,
+												1,
+												-1,
+												1,
+												MS_COLOR_DESCRIPTION_BACKGROUND_2,
+												0,
+												0,
+												255,
+												1,
+												1);
+
+		ms_TD_DescriptionItemName[playerid] = CreatePlayerTextDrawEx(playerid, 336.807769, 134.333419, ms_Items[playerid][index][ms_ItemName],
 												0.225572, 1.349166,
 												514.000000, 0.0,
 												1,
@@ -1072,9 +1088,15 @@ stock MenuStore_OpenDescription(playerid, index)
 												2,
 												1);
 
-		ms_TD_DescriptionItemText[playerid] = CreatePlayerTextDrawEx(playerid, 392.685241, 147.783721, ms_Items[playerid][index][ms_ItemDescription][0],
+		new Float:description_text_size_y = 460.000000,
+			Float:description_text_size_x = 0.000000;
+
+		if(!ms_Items[playerid][index][ms_ItemLineJump])
+			description_text_size_y = 513.000000;
+
+		ms_TD_DescriptionItemText[playerid] = CreatePlayerTextDrawEx(playerid, 336.981842, 147.783721, ms_Items[playerid][index][ms_ItemDescription],
 												0.199804, 1.098332,
-												513.000000, 0.000000,
+												description_text_size_y, description_text_size_x,
 												1,
 												MS_COLOR_DESCRIPTION_TEXT,
 												1,
@@ -1085,7 +1107,7 @@ stock MenuStore_OpenDescription(playerid, index)
 												2,
 												1);
 
-		ms_TD_DescriptionItemModel[playerid] = CreatePlayerTextDrawEx(playerid, 337.642700, 135.683410, "",
+		ms_TD_DescriptionItemModel[playerid] = CreatePlayerTextDrawEx(playerid, 460.658721, 135.700027, "",
 												0.000000, 0.000000,
 												52.000000, 51.000000,
 												1,
@@ -1111,11 +1133,18 @@ stock MenuStore_OpenDescription(playerid, index)
 
 		PlayerTextDrawSetString(playerid, ms_TD_DescriptionItemName[playerid], ms_Items[playerid][index][ms_ItemName][0]);
 		PlayerTextDrawSetString(playerid, ms_TD_DescriptionItemText[playerid], ms_Items[playerid][index][ms_ItemDescription][0]);
+
+		new Float:description_text_size_y = 460.000000,
+			Float:description_text_size_x = 0.000000;
+
+		if(!ms_Items[playerid][index][ms_ItemLineJump])
+			description_text_size_y = 513.000000;
+
+		PlayerTextDrawTextSize(playerid, ms_TD_DescriptionItemText[playerid], description_text_size_y, description_text_size_x);
 	}
 
-	TextDrawShowForPlayer(playerid, ms_TD_DescriptionBackground[0]);
-	TextDrawShowForPlayer(playerid, ms_TD_DescriptionBackground[1]);
-	
+	PlayerTextDrawShow(playerid, ms_TD_DescriptionBackground[playerid][0]);
+	PlayerTextDrawShow(playerid, ms_TD_DescriptionBackground[playerid][1]);
 	PlayerTextDrawShow(playerid, ms_TD_DescriptionItemName[playerid]);
 	PlayerTextDrawShow(playerid, ms_TD_DescriptionItemText[playerid]);
 	PlayerTextDrawShow(playerid, ms_TD_DescriptionItemModel[playerid]);
@@ -1124,9 +1153,8 @@ stock MenuStore_OpenDescription(playerid, index)
 
 stock MenuStore_CloseDescription(playerid)
 {
-	TextDrawHideForPlayer(playerid, ms_TD_DescriptionBackground[0]);
-	TextDrawHideForPlayer(playerid, ms_TD_DescriptionBackground[1]);
-
+	RemovePlayerTD(playerid, ms_TD_DescriptionBackground[playerid][0]);
+	RemovePlayerTD(playerid, ms_TD_DescriptionBackground[playerid][1]);
 	RemovePlayerTD(playerid, ms_TD_DescriptionItemName[playerid]);
 	RemovePlayerTD(playerid, ms_TD_DescriptionItemText[playerid]);
 	RemovePlayerTD(playerid, ms_TD_DescriptionItemModel[playerid]);
@@ -1144,6 +1172,8 @@ stock MenuStore_ResetVariables(playerid)
 		ms_Items[playerid][i][ms_ItemName][0] = EOS;
 		ms_Items[playerid][i][ms_ItemDescription][0] = EOS;
 		ms_Items[playerid][i][ms_ItemPreviewRot][0] = ms_Items[playerid][i][ms_ItemPreviewRot][1] = ms_Items[playerid][i][ms_ItemPreviewRot][2] = ms_Items[playerid][i][ms_ItemPreviewRot][3] = 0.0;
+		ms_Items[playerid][i][ms_ItemLineJump] = true;
+		ms_Items[playerid][i][ms_ItemDescriptionBonus] = MS_DEFAULT_BONUS_SIZE_DESCRIPTION;
 	}
 
 	for(new i = 0; i < MS_MAX_ITEMS_CART; i++)
