@@ -1,5 +1,5 @@
 /*
-	MenuStore - Version 4.0
+	MenuStore - Version 4.1
 	Created by CaioTJF
 */
 
@@ -263,8 +263,11 @@ public OnGameModeInit()
 									2,
 									1);
 
-	return CallLocalFunction("MS_OnGameModeInit", "");
-
+	#if defined MS_OnGameModeInit
+		return MS_OnGameModeInit();
+	#else
+		return 1;
+	#endif
 }
 
 #if defined _ALS_OnGameModeInit
@@ -274,7 +277,9 @@ public OnGameModeInit()
 #endif
 #define OnGameModeInit MS_OnGameModeInit
 
-forward MS_OnGameModeInit();
+#if defined MS_OnGameModeInit
+	forward MS_OnGameModeInit();
+#endif
 
 //-------------------------------------------
 
@@ -341,7 +346,11 @@ public OnPlayerClickPlayerTextDraw(playerid, PlayerText:playertextid)
 		}
 	}
 
-	return CallLocalFunction("MS_OnPlayerClickPlayerTD", "ii", playerid, _:playertextid);
+	#if defined MS_OnPlayerClickPlayerTD
+		return MS_OnPlayerClickPlayerTD(playerid, playertextid);
+	#else
+		return 1;
+	#endif
 }
 
 
@@ -352,8 +361,9 @@ public OnPlayerClickPlayerTextDraw(playerid, PlayerText:playertextid)
 #endif
 #define OnPlayerClickPlayerTextDraw MS_OnPlayerClickPlayerTD
 
-forward MS_OnPlayerClickPlayerTD(playerid, PlayerText:playertextid);
-
+#if defined MS_OnPlayerClickPlayerTD
+	forward MS_OnPlayerClickPlayerTD(playerid, PlayerText:playertextid);
+#endif
 
 //-------------------------------------------
 
@@ -419,7 +429,11 @@ public OnPlayerClickTextDraw(playerid, Text:clickedid)
 		}
 	}
 
-	return CallLocalFunction("MS_OnPlayerClickTextDraw", "ii", playerid, _:clickedid);
+	#if defined MS_OnPlayerClickTextDraw
+		return MS_OnPlayerClickTextDraw(playerid, clickedid);
+	#else
+		return 1;
+	#endif
 }
 
 
@@ -430,7 +444,9 @@ public OnPlayerClickTextDraw(playerid, Text:clickedid)
 #endif
 #define OnPlayerClickTextDraw MS_OnPlayerClickTextDraw
 
-forward MS_OnPlayerClickTextDraw(playerid, Text:clickedid);
+#if defined MS_OnPlayerClickTextDraw
+	forward MS_OnPlayerClickTextDraw(playerid, Text:clickedid);
+#endif
 
 //-------------------------------------------
 
@@ -464,7 +480,11 @@ public OnPlayerConnect(playerid)
 
 	MenuStore_ResetVariables(playerid);
 
-	return CallLocalFunction("MS_OnPlayerConnect", "i", playerid);
+	#if defined MS_OnPlayerConnect
+		return MS_OnPlayerConnect(playerid);
+	#else
+		return 1;
+	#endif
 }
 
 #if defined _ALS_OnPlayerConnect
@@ -474,7 +494,9 @@ public OnPlayerConnect(playerid)
 #endif
 #define OnPlayerConnect MS_OnPlayerConnect
 
-forward MS_OnPlayerConnect(playerid);
+#if defined MS_OnPlayerConnect
+	forward MS_OnPlayerConnect(playerid);
+#endif
 
 //-------------------------------------------
 
@@ -500,7 +522,12 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		MenuStore_AddToCart(playerid, ms_Items[playerid][index][ms_ItemID], ms_Items[playerid][index][ms_ItemPrice], strval(inputtext));
 		return true;
 	}
-	return CallLocalFunction("MS_OnDialogResponse", "iiiis", playerid, dialogid, response, listitem, inputtext);
+
+	#if defined MS_OnDialogResponse
+		return MS_OnDialogResponse(playerid, dialogid, response, listitem, inputtext);
+	#else
+		return 1;
+	#endif
 }
 
 #if defined _ALS_OnDialogResponse
@@ -738,7 +765,7 @@ stock MenuStore_SortCart(playerid)
 
 stock MenuStore_GetItemNameByID(playerid, id)
 {
-	ms_String[0] = EOS;
+	format(ms_String, sizeof(ms_String), "N/A");
 
 	for(new i = 0; i < MS_MAX_ITEMS; i++)
 	{
@@ -901,6 +928,9 @@ stock MenuStore_AddItem(playerid, itemid, modelid, name[], price, description[] 
 
 stock MenuStore_Open(playerid, menuid[], store_name[], money_sign[] = MS_DEFAULT_MONEY_SIGN, button_confirm[] = MS_DEFAULT_CONFIRM)
 {
+	if(MenuStore_IsOpen(playerid))
+		return false;
+
 	SelectTextDraw(playerid, MS_COLOR_SELECT_TD);
 	ms_Info[playerid][ms_IsOpen] = true;
 	format(ms_Info[playerid][ms_MoneySign], 32, money_sign);
@@ -969,7 +999,7 @@ stock MenuStore_Open(playerid, menuid[], store_name[], money_sign[] = MS_DEFAULT
 
 	ms_Info[playerid][ms_CurrentPage] = 1;
 	MenuStore_SetPage(playerid, ms_Info[playerid][ms_CurrentPage]);
-
+	return true;
 }
 
 stock MenuStore_Close(playerid)
@@ -1140,6 +1170,9 @@ stock MenuStore_OpenDescription(playerid, index)
 			description_text_size_y = 513.000000;
 
 		PlayerTextDrawTextSize(playerid, ms_TD_DescriptionItemText[playerid], description_text_size_y, description_text_size_x);
+
+		PlayerTextDrawLetterSize(playerid, ms_TD_DescriptionBackground[playerid][0], 0.000000, (6.630985+ms_Items[playerid][index][ms_ItemDescriptionBonus]));
+		PlayerTextDrawLetterSize(playerid, ms_TD_DescriptionBackground[playerid][1], 0.000000, (6.111274+ms_Items[playerid][index][ms_ItemDescriptionBonus]));
 	}
 
 	PlayerTextDrawShow(playerid, ms_TD_DescriptionBackground[playerid][0]);
