@@ -1,5 +1,5 @@
 /*
-	MenuStore - Version 4.1
+	MenuStore - Version 4.2
 	Created by CaioTJF
 */
 
@@ -900,8 +900,8 @@ stock MenuStore_AddItem(playerid, itemid, modelid, name[], price, description[] 
 			ms_Items[playerid][i][ms_ItemPrice] = price;
 			ms_Items[playerid][i][ms_ItemStack] = stack;
 
-			strpack(ms_Items[playerid][i][ms_ItemName], name);
-			strpack(ms_Items[playerid][i][ms_ItemDescription], description);
+			strpack(ms_Items[playerid][i][ms_ItemName], name, 32 char);
+			strpack(ms_Items[playerid][i][ms_ItemDescription], description, 256 char);
 			
 			if(description_size > MS_MAX_SIZE_DESCRIPTION) {
 				ms_Items[playerid][i][ms_ItemDescriptionBonus] = MS_MAX_SIZE_DESCRIPTION;
