@@ -143,8 +143,8 @@ static PlayerText:ms_TD_Cart_ItemClose[MAX_PLAYERS][MS_MAX_ITEMS_CART];
 static PlayerText:ms_TD_Cart_BuyName[MAX_PLAYERS] = {PlayerText:INVALID_TEXT_DRAW, ...};
 static PlayerText:ms_TD_Cart_Total[MAX_PLAYERS] = {PlayerText:INVALID_TEXT_DRAW, ...};
 
-forward PlayerText:CreatePlayerTextDrawEx(playerid, Float:x, Float:y, text[], Float:size_x, Float:size_y, Float:textsize_x, Float:textsize_y, align, color, usebox,	boxcolor, shadow, outline, bg_color, font, proportional, model = 0,	Float:preview_x= 0.0, Float:preview_y = 0.0, Float:preview_z = 0.0, Float:preview_zoom = 1.0, selectable = 0);
-forward Text:CreateTextDrawEx(Float:x, Float:y, text[],	Float:size_x, Float:size_y,	Float:textsize_x, Float:textsize_y,	align, color, usebox, boxcolor,	shadow,	outline, bg_color, font, proportional, model = 0, Float:preview_x = 0.0, Float:preview_y = 0.0, Float:preview_z = 0.0, Float:preview_zoom = 0.0, selectable = 0);
+forward PlayerText:CreatePlayerTextDrawEx(playerid, Float:x, Float:y, const text[], Float:size_x, Float:size_y, Float:textsize_x, Float:textsize_y, align, color, usebox,	boxcolor, shadow, outline, bg_color, font, proportional, model = 0,	Float:preview_x= 0.0, Float:preview_y = 0.0, Float:preview_z = 0.0, Float:preview_zoom = 1.0, selectable = 0);
+forward Text:CreateTextDrawEx(Float:x, Float:y, const text[], Float:size_x, Float:size_y, Float:textsize_x, Float:textsize_y,	align, color, usebox, boxcolor,	shadow,	outline, bg_color, font, proportional, model = 0, Float:preview_x = 0.0, Float:preview_y = 0.0, Float:preview_z = 0.0, Float:preview_zoom = 0.0, selectable = 0);
 
 //-------------------------------------------
 
@@ -885,7 +885,7 @@ stock MenuStore_UpdateCart(playerid)
 	}
 }
 
-stock MenuStore_AddItem(playerid, itemid, modelid, name[], price, description[] = EOS, Float:description_size = 0.0, bool:description_line_jump = true, stack = 1, Float:rotX = 0.0, Float:rotY = 0.0, Float:rotZ = 0.0, Float:zoom = 1.0)
+stock MenuStore_AddItem(playerid, itemid, modelid, const name[], price, const description[] = EOS, Float:description_size = 0.0, bool:description_line_jump = true, stack = 1, Float:rotX = 0.0, Float:rotY = 0.0, Float:rotZ = 0.0, Float:zoom = 1.0)
 {
 	for(new i = 0; i < MS_MAX_ITEMS; i++)
 		if(ms_Items[playerid][i][ms_ItemID] == itemid)
@@ -926,7 +926,7 @@ stock MenuStore_AddItem(playerid, itemid, modelid, name[], price, description[] 
 }
 
 
-stock MenuStore_Open(playerid, menuid[], store_name[], money_sign[] = MS_DEFAULT_MONEY_SIGN, button_confirm[] = MS_DEFAULT_CONFIRM)
+stock MenuStore_Open(playerid, const menuid[], const store_name[], const money_sign[] = MS_DEFAULT_MONEY_SIGN, const button_confirm[] = MS_DEFAULT_CONFIRM)
 {
 	if(MenuStore_IsOpen(playerid))
 		return false;
@@ -1076,7 +1076,7 @@ stock MenuStore_OpenDescription(playerid, index)
 	if(ms_Info[playerid][ms_Selected] == -1)
 		return false;
 
-	if(_:ms_TD_DescriptionItemModel[playerid] == INVALID_TEXT_DRAW)
+	if(ms_TD_DescriptionItemModel[playerid] == PlayerText:INVALID_TEXT_DRAW)
 	{
 		ms_TD_DescriptionBackground[playerid][0] = CreatePlayerTextDrawEx(playerid, 333.100463, 130.980590, "box",
 												0.000000, (6.630985+ms_Items[playerid][index][ms_ItemDescriptionBonus]),
@@ -1229,7 +1229,7 @@ stock MenuStore_ResetVariables(playerid)
 
 static stock RemovePlayerTD(playerid, &PlayerText:td)
 {
-	if(_:td == INVALID_TEXT_DRAW)
+	if(td == PlayerText:INVALID_TEXT_DRAW)
 		return false;
 
 	PlayerTextDrawHide(playerid, td);
