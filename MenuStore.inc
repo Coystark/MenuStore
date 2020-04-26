@@ -1238,7 +1238,7 @@ static stock RemovePlayerTD(playerid, &PlayerText:td)
 	return true;
 }
 
-static stock PlayerText:CreatePlayerTextDrawEx(playerid, Float:x, Float:y, text[],
+static stock PlayerText:CreatePlayerTextDrawEx(playerid, Float:x, Float:y, const text[],
 							Float:size_x, Float:size_y,
 							Float:textsize_x, Float:textsize_y,
 							align,
@@ -1273,7 +1273,7 @@ static stock PlayerText:CreatePlayerTextDrawEx(playerid, Float:x, Float:y, text[
 	return td;
 }
 
-static stock Text:CreateTextDrawEx(Float:x, Float:y, text[],
+static stock Text:CreateTextDrawEx(Float:x, Float:y, const text[],
 					Float:size_x, Float:size_y,
 					Float:textsize_x, Float:textsize_y,
 					align,
