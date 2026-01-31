@@ -18,8 +18,138 @@
 */
 
 #define MS_MAX_ITEMS (MS_MAX_ITEMS_PER_PAGE*5) // --> Limit of 5 Pages
-#define MS_DEFAULT_MONEY_SIGN "$"
-#define MS_DEFAULT_CONFIRM "Buy"
+// Localization options:
+// Define `MENUSTORE_PTBR` or `MENUSTORE_SPANISH` before including this file
+// to automatically apply Portuguese (pt-BR) or Spanish defaults.
+// Individual `MS_...` macros can still be overridden manually.
+
+#if defined MENUSTORE_PTBR
+	#if !defined MS_DEFAULT_MONEY_SIGN
+		#define MS_DEFAULT_MONEY_SIGN "R$"
+	#endif
+
+	#if !defined MS_DEFAULT_CONFIRM
+		#define MS_DEFAULT_CONFIRM "Comprar"
+	#endif
+
+	#if !defined MS_MSG_TITLE_DIALOG
+		#define MS_MSG_TITLE_DIALOG "Escolha a quantidade"
+	#endif
+
+	#if !defined MS_MSG_DIALOG
+		#define MS_MSG_DIALOG "Selecione a quantidade que deseja comprar:"
+	#endif
+
+	#if !defined MS_WORD_LIMIT
+		#define MS_WORD_LIMIT "Limite"
+	#endif
+
+	#if !defined MS_WORD_CLOSE
+		#define MS_WORD_CLOSE "Fechar"
+	#endif
+
+	#if !defined MS_WORD_TOTAL
+		#define MS_WORD_TOTAL "Total"
+	#endif
+
+	#if !defined MS_WORD_GO
+		#define MS_WORD_GO "Ir"
+	#endif
+
+	#if !defined MS_WORD_CANCEL
+		#define MS_WORD_CANCEL "Cancelar"
+	#endif
+
+	#if !defined MS_WORD_CART
+		#define MS_WORD_CART "Carrinho"
+	#endif
+
+#else
+	#if defined MENUSTORE_SPANISH
+		#if !defined MS_DEFAULT_MONEY_SIGN
+			#define MS_DEFAULT_MONEY_SIGN "$"
+		#endif
+
+		#if !defined MS_DEFAULT_CONFIRM
+			#define MS_DEFAULT_CONFIRM "Comprar"
+		#endif
+
+		#if !defined MS_MSG_TITLE_DIALOG
+			#define MS_MSG_TITLE_DIALOG "Elija la cantidad"
+		#endif
+
+		#if !defined MS_MSG_DIALOG
+			#define MS_MSG_DIALOG "Ingrese la cantidad que desea comprar"
+		#endif
+
+		#if !defined MS_WORD_LIMIT
+			#define MS_WORD_LIMIT "Límite"
+		#endif
+
+		#if !defined MS_WORD_CLOSE
+			#define MS_WORD_CLOSE "Cerrar"
+		#endif
+
+		#if !defined MS_WORD_TOTAL
+			#define MS_WORD_TOTAL "Total"
+		#endif
+
+		#if !defined MS_WORD_GO
+			#define MS_WORD_GO "Aceptar"
+		#endif
+
+		#if !defined MS_WORD_CANCEL
+			#define MS_WORD_CANCEL "Cancelar"
+		#endif
+
+		#if !defined MS_WORD_CART
+			#define MS_WORD_CART "Carrito"
+		#endif
+
+	#else
+		#if !defined MS_DEFAULT_MONEY_SIGN
+			#define MS_DEFAULT_MONEY_SIGN "$"
+		#endif
+
+		#if !defined MS_DEFAULT_CONFIRM
+			#define MS_DEFAULT_CONFIRM "Buy"
+		#endif
+
+		#if !defined MS_MSG_TITLE_DIALOG
+			#define MS_MSG_TITLE_DIALOG "Choose quantity"
+		#endif
+
+		#if !defined MS_MSG_DIALOG
+			#define MS_MSG_DIALOG "Enter the quantity you want to buy"
+		#endif
+
+		#if !defined MS_WORD_LIMIT
+			#define MS_WORD_LIMIT "Limit"
+		#endif
+
+		#if !defined MS_WORD_CLOSE
+			#define MS_WORD_CLOSE "Close"
+		#endif
+
+		#if !defined MS_WORD_TOTAL
+			#define MS_WORD_TOTAL "Total"
+		#endif
+
+		#if !defined MS_WORD_GO
+			#define MS_WORD_GO "Go"
+		#endif
+
+		#if !defined MS_WORD_CANCEL
+			#define MS_WORD_CANCEL "Cancel"
+		#endif
+
+		#if !defined MS_WORD_CART
+			#define MS_WORD_CART "Cart"
+		#endif
+
+	#endif
+
+#endif
 
 #define MS_COLOR_SELECT_TD 0xffffffFF
 #define MS_COLOR_TEXT_MAIN 0xffffffFF
@@ -42,16 +172,6 @@
 
 #define MS_COLOR_TITLE_DIALOG "{ffffff}"
 #define MS_COLOR_TEXT_DIALOG "{ffffff}"
-
-#define MS_MSG_TITLE_DIALOG "Choose quantity"
-#define MS_MSG_DIALOG "Enter the quantity you want to buy"
-
-#define MS_WORD_LIMIT "Limit"
-#define MS_WORD_CLOSE "Close"
-#define MS_WORD_TOTAL "Total"
-#define MS_WORD_GO "Go"
-#define MS_WORD_CANCEL "Cancel"
-#define MS_WORD_CART "Cart"
 
 #define MS_INTERVAL_DOUBLECLICK 300
 #define DIALOG_MSTORE 23132
