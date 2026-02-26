@@ -1,8 +1,13 @@
 /*
-	MenuStore - Version 4.2
+	MenuStore - Version 4.3
 	Created by CaioTJF
 */
 
+// easyDialog detection - checks if easyDialog is available
+// The detection is done via the Dialog macro which is defined by easyDialog
+#if defined Dialog
+	#define MS_USE_EASYDIALOG
+#endif
 
 /*	
 	You can NOT change 
@@ -422,7 +427,11 @@ public OnPlayerClickPlayerTextDraw(playerid, PlayerText:playertextid)
 						MenuStore_ToggleControll(playerid, false);
 						MenuStore_SelectRow(playerid, i);
 						format(ms_String, sizeof(ms_String), ""#MS_COLOR_TEXT_DIALOG""#MS_MSG_DIALOG" ("#MS_WORD_LIMIT": %d)", ms_Items[playerid][index][ms_ItemStack]);
-						ShowPlayerDialog(playerid, DIALOG_MSTORE, DIALOG_STYLE_INPUT, ""#MS_COLOR_TITLE_DIALOG""#MS_MSG_TITLE_DIALOG":", ms_String, MS_WORD_GO, MS_WORD_CANCEL);
+						#if defined MS_USE_EASYDIALOG
+							Dialog_Show(playerid, MS_DialogQuantity, DIALOG_STYLE_INPUT, ""#MS_COLOR_TITLE_DIALOG""#MS_MSG_TITLE_DIALOG":", ms_String, MS_WORD_GO, MS_WORD_CANCEL);
+						#else
+							ShowPlayerDialog(playerid, DIALOG_MSTORE, DIALOG_STYLE_INPUT, ""#MS_COLOR_TITLE_DIALOG""#MS_MSG_TITLE_DIALOG":", ms_String, MS_WORD_GO, MS_WORD_CANCEL);
+						#endif
 					}
 					else
 					{
@@ -620,6 +629,32 @@ public OnPlayerConnect(playerid)
 
 //-------------------------------------------
 
+// easyDialog handler (when easyDialog is available)
+#if defined MS_USE_EASYDIALOG
+Dialog:MS_DialogQuantity(playerid, response, listitem, inputtext[])
+{
+	MenuStore_ToggleControll(playerid, true);
+	MenuStore_CloseDescription(playerid);
+
+	if(!response || ms_Info[playerid][ms_Selected] == -1 || isnull(inputtext))
+	{
+		MenuStore_UnselectRow(playerid);
+		return true;
+	}	
+
+	new index = ms_Info[playerid][ms_Selected]+(MS_MAX_ITEMS_PER_PAGE * (ms_Info[playerid][ms_CurrentPage] - 1));
+	MenuStore_UnselectRow(playerid);
+
+	if(strval(inputtext) < 1 || strval(inputtext) > ms_Items[playerid][index][ms_ItemStack])
+		return true;
+
+	MenuStore_AddToCart(playerid, ms_Items[playerid][index][ms_ItemID], ms_Items[playerid][index][ms_ItemPrice], strval(inputtext));
+	return true;
+}
+#endif
+
+// Native dialog handler (fallback when easyDialog is not available)
+#if !defined MS_USE_EASYDIALOG
 public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 {
 	if(dialogid == DIALOG_MSTORE)
@@ -659,6 +694,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 
 #if defined MS_OnDialogResponse
     forward MS_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]);
+#endif
 #endif
 
 //-------------------------------------------
@@ -831,6 +867,19 @@ stock MenuStore_GetCartTotalValue(playerid)
 
 stock MenuStore_AddToCart(playerid, itemid, price, amount)
 {
+	// First, check if item already exists in cart and stack it
+	for(new i = 0; i < MS_MAX_ITEMS_CART; i++)
+	{
+		if(ms_Cart[playerid][ms_Cart_ItemID][i] == itemid)
+		{
+			ms_Cart[playerid][ms_Cart_ItemAmount][i] += amount;
+			MenuStore_UpdateCart(playerid);
+			MenuStore_UpdateCartTotalValue(playerid);
+			return;
+		}
+	}
+	
+	// If item not found in cart, add to first empty slot
 	for(new i = 0; i < MS_MAX_ITEMS_CART; i++)
 	{
 		if(ms_Cart[playerid][ms_Cart_ItemID][i] == MSTORE_INVALID_ITEM_ID)
